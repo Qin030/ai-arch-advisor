@@ -23,6 +23,15 @@ dev = [
     "ruff>=0.8",
 ]
 
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+# 根目錄有 app/ data/ schema/ 三個目錄，setuptools 的自動偵測會因為
+# 無法判斷要打包哪個而拒絕建置。只有 app/ 是 Python 套件，明確指定。
+[tool.setuptools]
+packages = ["app", "app.api", "app.core", "app.retrieval", "app.rules"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py311"

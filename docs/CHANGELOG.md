@@ -10,7 +10,8 @@ M2 的企畫書稽核就是審這一份——每一筆新增的宣稱，都要�
 - agent 設定就緒：CLAUDE.md、AGENTS.md、兩份巢狀記憶檔、五個指令、兩個 subagent
 - 三個 Gemini Gem（法規切片員、規格與 PR 審查員、企畫書守門員）已依 `docs/agents/GEMINI.md` 手動建立完成
 - `@youyiwangwww` 已接受 collaborator 邀請；issue #1（M0 schema 審查）已改指派給她
-- `main` 開啟 branch protection：Required approvals 1、不勾 Require review from Code Owners、Required status check `ci`、Do not allow bypassing。三項機制皆以實際測試 PR（#2，已關閉不合併）驗證生效：直推 main 被拒（GH006）、PR 自動指派 reviewer（CODEOWNERS `*` 規則）、merge 因 branch policy 被擋（含 admin 身分）。**Day 1 完成。**
+- `main` 開啟 branch protection：Required approvals 1、不勾 Require review from Code Owners、Required status check `ci`、Do not allow bypassing。三項機制皆以實際測試 PR（#2，已關閉不合併）驗證生效：直推 main 被拒（GH006）、PR 自動指派 reviewer（CODEOWNERS `*` 規則）、merge 因 branch policy 被擋（含 admin 身分）。
+- CI 首次在 PR 上執行時發現 flat-layout 套件偵測失敗（根目錄同時有 `app/`、`data/`、`schema/`，setuptools 無法判斷要打包哪個），已在 `pyproject.toml` 明確宣告 `packages`。乾淨環境四步（pip install -e ".[dev]" → ruff → validate_kb → pytest）驗證全綠後才推。**Day 1 完成。**
 - CI 三步驟綠燈：ruff → validate_kb → pytest
 - 企畫書就位：`docs/proposal/提案書_v3_0828.docx`（含附錄，語意轉譯強化修訂版）——M2 之後對 schema 的附錄核對以此檔為準
 - 修正情境一主角定案為「郭先生」：與 Aug 26 舊稿的「王先生」不一致，已與人工核對確認，`docs/CONTRACT.md`、`docs/PLAN.md` 同步改名；舊稿與 `修訂版_2` 兩份移入 `docs/proposal/archive/`
