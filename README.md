@@ -30,3 +30,4 @@ make dev                  # 起 API（另開終端機跑 make ui）
 Day 1：契約凍結。`/health` 可用，其餘 endpoint 回 501。
 
 <!-- D10 補：功能清單、實測指標、Demo 影片連結、已知限制 -->
+
