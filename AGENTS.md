@@ -109,6 +109,7 @@ D9 要拿 UI 截圖放進企畫書的圖 3，所以三個畫面必須好看且�
 | `docs/REPO_STRUCTURE.md` | 不確定一個新檔案該放哪 |
 | `docs/PLAN.md` | 需要知道某項工作排在第幾天、誰負責 |
 | `docs/agents/ROSTER.md` | 需要跨 agent 交接 |
+| `docs/agents/PROMPTS.md` | 開工／收工／寫規格測試／知識庫切片／UI 前，複製固定提示詞 |
 
 ## 當前階段
 
