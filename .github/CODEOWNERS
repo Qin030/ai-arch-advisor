@@ -1,23 +1,36 @@
-# 預設：兩人都要看
-*                       @member1 @member2
+# CODEOWNERS
+#
+# ⚠️ 比對規則是「最後符合者勝出」，不是「最精確者勝出」。
+# 廣泛的規則寫在前面，特例寫在後面，否則特例會被蓋掉。
+#
+# 這份檔案只負責「自動指派 reviewer」。
+# 不要在 branch protection 開「Require review from Code Owners」，原因見檔尾。
 
-# M1：核心程式與企畫書
-/app/api/               @member1
-/app/core/              @member1
-/app/rules/             @member1
-/app/retrieval/         @member1
-/docs/proposal/         @member1
+# --- 預設：兩人都收到通知 ---
+*                       @Qin030 @youyiwangwww
 
-# M2：資料、介面、測試、技術文件
-/data/kb/               @member2
-/ui/                    @member2
-/tests/spec/            @member2
-/scripts/               @member2
-/docs/                  @member2
+# --- 廣泛規則（先寫）---
+/app/                   @Qin030
+/docs/                  @youyiwangwww
 
-# 契約與鐵律：動了就要兩人同意
-/schema/                @member1 @member2
-/docs/CONTRACT.md       @member1 @member2
-/docs/agents/RULES.md   @member1 @member2
-/CLAUDE.md              @member1 @member2
-/AGENTS.md              @member1 @member2
+# --- 各自的專屬目錄 ---
+/data/kb/               @youyiwangwww
+/ui/                    @youyiwangwww
+/tests/spec/            @youyiwangwww
+/scripts/               @youyiwangwww
+
+# --- 特例覆蓋（後寫，才蓋得過上面的 /docs/）---
+/docs/proposal/         @Qin030
+
+# --- 契約與鐵律：兩人共管 ---
+/schema/                @Qin030 @youyiwangwww
+/docs/CONTRACT.md       @Qin030 @youyiwangwww
+/docs/agents/RULES.md   @Qin030 @youyiwangwww
+/CLAUDE.md              @Qin030 @youyiwangwww
+/AGENTS.md              @Qin030 @youyiwangwww
+
+# 為什麼不開 Require review from Code Owners：
+# 兩人團隊裡 /app/ 只有 @Qin030 一個 owner。M1 自己開的 PR 需要 code owner 核准，
+# 但 GitHub 不允許作者核准自己的 PR，而 M2 不是 /app/ 的 owner，他的核准不算數。
+# 結果是那個 PR 永遠合併不了。改用 Require approvals: 1，
+# 兩人團隊裡「任何一個核准」本來就等於「對方核准」，效果相同且不會卡死。
