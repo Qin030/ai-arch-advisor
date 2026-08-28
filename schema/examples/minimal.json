@@ -1,0 +1,10 @@
+{
+  "session_id": "sess-min-001",
+  "region": "tainan",
+  "household": { "members": 4 },
+  "lighting": { "color_temp": "warm" },
+  "smart": {
+    "control_mode": "app",
+    "scenes": ["security"]
+  }
+}

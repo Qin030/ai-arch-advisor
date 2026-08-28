@@ -1,0 +1,35 @@
+[project]
+name = "ai-arch-advisor"
+version = "0.1.0"
+description = "AI 建築前期決策助理"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+    "langchain>=0.3",
+    "chromadb>=0.5",
+    "sentence-transformers>=3.3",
+    "sqlalchemy>=2.0",
+    "pyyaml>=6.0",
+    "streamlit>=1.40",
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

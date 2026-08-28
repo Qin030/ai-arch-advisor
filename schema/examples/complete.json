@@ -1,0 +1,41 @@
+{
+  "session_id": "sess-full-001",
+  "region": "tainan",
+  "site": {
+    "land_number": "臺南市東區○○段 123 地號",
+    "zoning": "住宅區",
+    "district": "東區"
+  },
+  "project": {
+    "building_type": "detached_house",
+    "floors": 2,
+    "planned_floor_area_ping": 60
+  },
+  "household": {
+    "members": 4,
+    "has_elderly": false,
+    "has_children": true,
+    "routines": ["remote_work", "cooking_often"]
+  },
+  "budget": {
+    "total_twd": 20000000,
+    "includes": ["structure"]
+  },
+  "lighting": {
+    "color_temp": "warm",
+    "brightness_preference": "soft",
+    "dimmable": true,
+    "scene_control": true
+  },
+  "circulation": {
+    "priorities": ["short_path", "storage"],
+    "storage_locations": ["entrance", "kitchen"]
+  },
+  "smart": {
+    "control_mode": "both",
+    "scenes": ["arrive_home", "leave_home", "security", "lighting"],
+    "devices": ["smart_lighting", "camera"]
+  },
+  "network": { "ap_points": 3 },
+  "power": { "reserved_outlets": 8 }
+}

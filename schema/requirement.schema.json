@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/OWNER/ai-arch-advisor/schema/requirement.schema.json",
+  "title": "結構化住宅需求",
+  "description": "收斂層的輸出格式。x- 開頭的自訂欄位同時定義追問決策樹，question_tree.py 直接讀這份檔案，不要在程式碼裡重複一份。",
+  "type": "object",
+
+  "x-ask-order": [
+    "site",
+    "household",
+    "budget",
+    "lighting",
+    "circulation",
+    "smart"
+  ],
+
+  "required": ["session_id", "region"],
+
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "對話識別碼"
+    },
+
+    "region": {
+      "type": "string",
+      "enum": ["tainan"],
+      "description": "適用地區。不在 enum 內即觸發拒答，不得以鄰近地區規定推定。MVP 只有臺南。",
+      "x-refusal": {
+        "when_invalid": "all_regulation",
+        "confirm_with": "建築師",
+        "impact": "全部法規判定",
+        "reason": "本系統現階段僅收錄臺南市資料，其他地區不作判定"
+      }
+    },
+
+    "site": {
+      "type": "object",
+      "title": "基地",
+      "x-priority": 1,
+      "properties": {
+        "land_number": {
+          "type": "string",
+          "description": "地號"
+        },
+        "zoning": {
+          "type": "string",
+          "description": "使用分區"
+        },
+        "district": {
+          "type": "string",
+          "description": "行政區，例如 東區"
+        }
+      },
+      "anyOf": [
+        { "required": ["land_number"] },
+        { "required": ["zoning"] }
+      ],
+      "x-question": "請問基地的地號或使用分區是什麼？若還不確定，也可以先告訴我在哪一個行政區。",
+      "x-question-reason": "建蔽率、容積率與退縮規定依使用分區而定，缺少這項就無法判定可建規模。",
+      "x-refusal": {
+        "blocks": ["building_coverage_ratio", "floor_area_ratio", "setback"],
+        "confirm_with": "建築師",
+        "impact": "可建樓地板面積與樓層數",
+        "reason": "未提供地號或使用分區，無法取得適用之建蔽率與容積率"
+      }
+    },
+
+    "project": {
+      "type": "object",
+      "title": "建案基本條件",
+      "x-extracted-from-utterance": true,
+      "description": "由開場的自然語言輸入抽取（例如「兩層透天、60 坪」），不列入 x-ask-order。抽取失敗時由結束前掃描補問。",
+      "properties": {
+        "building_type": {
+          "type": "string",
+          "enum": ["detached_house"],
+          "description": "MVP 只支援自地自建透天"
+        },
+        "floors": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "planned_floor_area_ping": {
+          "type": "number",
+          "description": "計畫樓地板面積（坪）"
+        }
+      }
+    },
+
+    "household": {
+      "type": "object",
+      "title": "家庭成員與作息",
+      "x-priority": 2,
+      "required": ["members"],
+      "properties": {
+        "members": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "居住人數"
+        },
+        "has_elderly": { "type": "boolean" },
+        "has_children": { "type": "boolean" },
+        "routines": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["remote_work", "cooking_often", "entertaining", "pets"]
+          }
+        }
+      },
+      "x-question": "家裡預計有幾位成員一起住？有長輩或幼童嗎？",
+      "x-question-reason": "影響空間配置、無障礙需求與動線規劃，事後變更涉及隔間與管線調整。",
+      "x-refusal": {
+        "blocks": ["space_layout"],
+        "confirm_with": "建築師",
+        "impact": "空間配置建議",
+        "reason": "未提供家庭成員資料，無法生成空間配置相關描述"
+      }
+    },
+
+    "budget": {
+      "type": "object",
+      "title": "預算",
+      "x-priority": 3,
+      "properties": {
+        "total_twd": {
+          "type": "integer",
+          "description": "總預算（新臺幣元）"
+        },
+        "includes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["land", "structure", "interior", "landscape"]
+          },
+          "description": "預算涵蓋範圍。成本區間僅就 structure 推估"
+        }
+      },
+      "x-question": "整體預算大約多少？這筆預算是否包含土地、室內裝修或外構？",
+      "x-question-reason": "工程費區間以每坪單價推估，涵蓋範圍不同會差很多。"
+    },
+
+    "lighting": {
+      "type": "object",
+      "title": "光線氛圍",
+      "description": "對應語彙：溫暖、溫馨、明亮、柔和",
+      "x-priority": 4,
+      "required": ["color_temp"],
+      "properties": {
+        "color_temp": {
+          "type": "string",
+          "enum": ["warm", "neutral", "cool"],
+          "description": "warm 2700–3000K｜neutral 3500–4000K｜cool 5000K 以上"
+        },
+        "brightness_preference": {
+          "type": "string",
+          "enum": ["bright", "soft"]
+        },
+        "dimmable": { "type": "boolean" },
+        "scene_control": { "type": "boolean" }
+      },
+      "x-question": "主要生活空間希望偏暖黃、中性白，還是冷白？光感偏明亮還是柔和？",
+      "x-question-reason": "影響燈具選型與迴路配置，事後變更可能涉及天花與線路調整。",
+      "x-refusal": {
+        "blocks": ["color_temp_description"],
+        "confirm_with": "室內設計師或水電技師",
+        "impact": "照明氛圍與後續換裝彈性",
+        "reason": "未確認色溫偏好，不生成色溫描述；實際照度、燈具型號與迴路數量須由專業人員判定"
+      }
+    },
+
+    "circulation": {
+      "type": "object",
+      "title": "動線與收納",
+      "description": "對應語彙：方便、好用、順手",
+      "x-priority": 5,
+      "properties": {
+        "priorities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["short_path", "storage", "automation", "accessibility"]
+          }
+        },
+        "storage_locations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["entrance", "kitchen", "bedroom", "utility"]
+          }
+        }
+      },
+      "x-question": "您說的方便，主要是指動線、收納，還是自動控制？主要的收納位置想放在哪裡？",
+      "x-question-reason": "影響隔間位置與櫃體預留，封牆後調整成本較高。"
+    },
+
+    "smart": {
+      "type": "object",
+      "title": "數位設備",
+      "description": "對應語彙：智慧家電、想用手機控制、要有監視器",
+      "x-priority": 6,
+      "required": ["control_mode", "scenes"],
+      "properties": {
+        "control_mode": {
+          "type": "string",
+          "enum": ["voice", "app", "both"]
+        },
+        "scenes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": ["arrive_home", "leave_home", "sleep", "security", "lighting"]
+          }
+        },
+        "devices": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["smart_lighting", "camera", "smart_lock", "av_system", "smart_appliance"]
+          }
+        }
+      },
+      "x-question": "希望有哪些智慧情境或設備，例如回家、離家、睡眠、安全監控或智慧照明？主要以語音還是手機操作？",
+      "x-question-reason": "影響弱電箱、網路孔位與設備電源預留，封牆後補線可能增加拆修成本。",
+      "x-refusal": {
+        "blocks": ["low_voltage", "network_ports", "device_power"],
+        "confirm_with": "中華電信",
+        "impact": "全屋 Wi-Fi 涵蓋及是否需事後補線",
+        "reason": "未確認智慧情境需求，不生成弱電、網路孔位與設備電源描述；實際光纖引進點、AP 佈點與頻寬方案須由中華電信評估"
+      }
+    },
+
+    "network": {
+      "type": "object",
+      "title": "網路（由 smart 推導）",
+      "x-derived-from": "smart",
+      "properties": {
+        "ap_points": { "type": "integer", "minimum": 0 }
+      }
+    },
+
+    "power": {
+      "type": "object",
+      "title": "電源預留（由 smart 推導）",
+      "x-derived-from": "smart",
+      "properties": {
+        "reserved_outlets": { "type": "integer", "minimum": 0 }
+      }
+    }
+  },
+
+  "additionalProperties": false
+}

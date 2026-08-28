@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# 環境變數（.env.example 才進版控）
+.env
+.env.local
+
+# 向量索引與資料庫（可重建，不進版控）
+.chroma/
+data/index/
+*.sqlite3
+*.db
+
+# 測試與 lint 快取
+.pytest_cache/
+.ruff_cache/
+.coverage
+
+# Word 鎖定暫存檔 —— 企畫書在版控裡，這行不能少
+~$*.docx
+~$*.doc
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Windows 下載檔的 ADS 標記，每次從外部拉檔案都會產生
+*:Zone.Identifier
+
+# Claude Code 個人設定（專案設定 .claude/settings.json 要進版控）
+.claude/settings.local.json

@@ -1,0 +1,14 @@
+{
+  "session_id": "sess-refusal-001",
+  "region": "tainan",
+  "project": {
+    "building_type": "detached_house",
+    "floors": 2,
+    "planned_floor_area_ping": 60
+  },
+  "budget": {
+    "total_twd": 20000000,
+    "includes": ["structure"]
+  },
+  "lighting": { "color_temp": "warm" }
+}

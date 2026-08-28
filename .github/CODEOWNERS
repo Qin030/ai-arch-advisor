@@ -1,0 +1,23 @@
+# 預設：兩人都要看
+*                       @member1 @member2
+
+# M1：核心程式與企畫書
+/app/api/               @member1
+/app/core/              @member1
+/app/rules/             @member1
+/app/retrieval/         @member1
+/docs/proposal/         @member1
+
+# M2：資料、介面、測試、技術文件
+/data/kb/               @member2
+/ui/                    @member2
+/tests/spec/            @member2
+/scripts/               @member2
+/docs/                  @member2
+
+# 契約與鐵律：動了就要兩人同意
+/schema/                @member1 @member2
+/docs/CONTRACT.md       @member1 @member2
+/docs/agents/RULES.md   @member1 @member2
+/CLAUDE.md              @member1 @member2
+/AGENTS.md              @member1 @member2

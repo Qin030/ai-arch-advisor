@@ -1,0 +1,152 @@
+"""Pydantic models. The code-side twin of schema/requirement.schema.json.
+
+The two MUST stay in sync — tests/smoke/test_contract_sync.py enforces it, and
+the D10 proposal audit checks that the appendix in the proposal matches this too.
+When you change a required field here, change it in the JSON schema in the same PR.
+"""
+
+from typing import Literal
+
+from pydantic import BaseModel, Field, model_validator
+
+Region = Literal["tainan"]
+ColorTemp = Literal["warm", "neutral", "cool"]
+ControlMode = Literal["voice", "app", "both"]
+Scene = Literal["arrive_home", "leave_home", "sleep", "security", "lighting"]
+
+
+# --- requirement field groups -------------------------------------------------
+
+
+class Site(BaseModel):
+    land_number: str | None = None
+    zoning: str | None = None
+    district: str | None = None
+
+    @model_validator(mode="after")
+    def _need_one(self):
+        # Mirrors the schema's anyOf. Either identifies the plot well enough to
+        # look up zoning rules; neither means regulation fields get refused.
+        if not (self.land_number or self.zoning):
+            raise ValueError("site requires land_number or zoning")
+        return self
+
+
+class Project(BaseModel):
+    building_type: Literal["detached_house"] | None = None
+    floors: int | None = Field(default=None, ge=1, le=4)
+    planned_floor_area_ping: float | None = None
+
+
+class Household(BaseModel):
+    members: int = Field(ge=1)
+    has_elderly: bool | None = None
+    has_children: bool | None = None
+    routines: list[Literal["remote_work", "cooking_often", "entertaining", "pets"]] = []
+
+
+class Budget(BaseModel):
+    total_twd: int | None = None
+    includes: list[Literal["land", "structure", "interior", "landscape"]] = []
+
+
+class Lighting(BaseModel):
+    color_temp: ColorTemp
+    brightness_preference: Literal["bright", "soft"] | None = None
+    dimmable: bool | None = None
+    scene_control: bool | None = None
+
+
+class Circulation(BaseModel):
+    priorities: list[Literal["short_path", "storage", "automation", "accessibility"]] = []
+    storage_locations: list[Literal["entrance", "kitchen", "bedroom", "utility"]] = []
+
+
+class Smart(BaseModel):
+    control_mode: ControlMode
+    scenes: list[Scene] = Field(min_length=1)
+    devices: list[
+        Literal["smart_lighting", "camera", "smart_lock", "av_system", "smart_appliance"]
+    ] = []
+
+
+class Network(BaseModel):
+    ap_points: int | None = Field(default=None, ge=0)
+
+
+class Power(BaseModel):
+    reserved_outlets: int | None = Field(default=None, ge=0)
+
+
+class Requirement(BaseModel):
+    session_id: str
+    region: Region
+    site: Site | None = None
+    project: Project | None = None
+    household: Household | None = None
+    budget: Budget | None = None
+    lighting: Lighting | None = None
+    circulation: Circulation | None = None
+    smart: Smart | None = None
+    network: Network | None = None
+    power: Power | None = None
+
+
+# --- refusal ------------------------------------------------------------------
+
+
+class Refusal(BaseModel):
+    """One row of the 待專業人員確認清單.
+
+    All four descriptive fields are required. A refusal without confirm_with or
+    impact is useless to the user standing in front of an architect.
+    """
+
+    missing_field: str
+    confirm_with: str
+    impact: str
+    reason: str
+    blocks: list[str] = []
+
+
+# --- questions & citations ----------------------------------------------------
+
+
+class QuestionOption(BaseModel):
+    value: str
+    label: str
+
+
+class Question(BaseModel):
+    field: str
+    text: str
+    reason: str  # Required by design: every question states why it is asked.
+    options: list[QuestionOption] = []
+    multi: bool = False
+
+
+class Citation(BaseModel):
+    slice_id: str
+    source_org: str
+    source_url: str
+    version_date: str
+    region: str
+    stale: bool = False
+
+
+# --- request bodies -----------------------------------------------------------
+
+
+class StartRequest(BaseModel):
+    utterance: str
+
+
+class TurnRequest(BaseModel):
+    session_id: str
+    field: str | None = None
+    value: object | None = None
+    skip: bool = False
+
+
+class SummaryRequest(BaseModel):
+    session_id: str

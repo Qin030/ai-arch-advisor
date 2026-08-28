@@ -1,0 +1,31 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      # 順序刻意如此：lint 最快，kb-check 次之，pytest 最慢
+      # 知識庫 metadata 錯是最便宜就能發現的錯，不需要等測試跑完
+      - name: Lint
+        run: ruff check .
+
+      - name: Knowledge base metadata
+        run: python scripts/validate_kb.py
+
+      - name: Tests
+        run: pytest -q
