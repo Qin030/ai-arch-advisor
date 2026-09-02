@@ -156,3 +156,61 @@ class TurnRequest(BaseModel):
 
 class SummaryRequest(BaseModel):
     session_id: str
+
+
+# --- response envelopes --------------------------------------------------------
+
+
+class Progress(BaseModel):
+    answered: int
+    total: int
+
+
+class StartResponse(BaseModel):
+    session_id: str
+    requirement: Requirement
+    detected_aspects: list[str] = []
+    next_question: Question
+    progress: Progress
+
+
+class TurnResponse(BaseModel):
+    requirement: Requirement
+    next_question: Question | None
+    progress: Progress
+    done: bool
+
+
+class DocumentSection(BaseModel):
+    title: str
+    content: str
+    citations: list[str] = []
+
+
+class DocumentSummary(BaseModel):
+    sections: list[DocumentSection] = []
+
+
+class ScanResult(BaseModel):
+    filled: list[str] = []
+    assumed: list[str] = []
+    missing: list[str] = []
+
+
+class PlanOption(BaseModel):
+    label: str
+    structure: str
+    cost_range: str
+    thermal_relative: str
+    pending: list[str] = []
+    citations: list[str] = []
+
+
+class SummaryResponse(BaseModel):
+    session_id: str
+    scan: ScanResult
+    building_summary: DocumentSummary
+    digital_summary: DocumentSummary
+    confirmations: list[Refusal] = []
+    plans: list[PlanOption] = []
+    citations: list[Citation] = []
