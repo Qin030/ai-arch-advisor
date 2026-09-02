@@ -1,6 +1,9 @@
 # 團隊鐵律（所有 agent 共用）
 
 > **這是唯一真相來源。** `CLAUDE.md` 以 `@` 匯入本檔；`AGENTS.md` 內嵌一份副本（改動時兩處同步）；Gemini 的 Gem 需手動更新。改這個檔案要兩人 approve。
+>
+> 修改本檔時必須同步 `AGENTS.md` 的內嵌副本，
+> `tests/smoke/test_rules_sync.py` 會在 CI 檢查，新增規則時同時更新該測試的 RULE_MARKERS。
 
 ## 1. 產出者 ≠ 審查者
 - 寫實作的 agent 不得撰寫該功能的測試。

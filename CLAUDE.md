@@ -17,6 +17,7 @@ M2 用 Codex 負責 `data/kb/`、`ui/`、`tests/spec/`，用 Gemini 做長文審
 ## 鐵律
 
 @docs/agents/RULES.md
+@docs/STATE.md
 
 ## 你負責的目錄
 
@@ -41,9 +42,9 @@ make lint          # ruff
 python scripts/validate_kb.py    # 知識庫 metadata 檢查
 ```
 
-## 規劃文件只有 RULES.md 用 @ 匯入
+## 規劃文件只有 RULES.md 與 STATE.md 用 @ 匯入
 
-`docs/PLAN.md`、`docs/REPO_STRUCTURE.md`、`docs/agents/SETUP.md`、`docs/agents/ROSTER.md` 這幾份都很長、多數內容用不到，**不要**改成 `@` 匯入——每個 session 開場都會白燒 context。新增規劃類文件時比照辦理，列進下方表格就好，不要加 `@`。目前唯一的例外是 `docs/agents/RULES.md`，因為那是每次都要遵守的鐵律，不是查閱資料。
+`docs/PLAN.md`、`docs/REPO_STRUCTURE.md`、`docs/agents/SETUP.md`、`docs/agents/ROSTER.md` 這幾份都很長、多數內容用不到，**不要**改成 `@` 匯入——每個 session 開場都會白燒 context。新增規劃類文件時比照辦理，列進下方表格就好，不要加 `@`。目前的例外是 `docs/agents/RULES.md`（每次都要遵守的鐵律，不是查閱資料）與 `docs/STATE.md`（只有十幾行，記今天第幾天、卡在哪、下一步是什麼——這種每次都會變、每次都要知道的即時狀態，本來就該每個 session 自動載入，跟長文件的排擠問題不是同一類）。
 
 ## 需要時才讀的文件
 

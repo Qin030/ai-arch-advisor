@@ -234,3 +234,18 @@ Day 1 只有這一個 endpoint 是真的，其餘回 501。`/health` 是 `make d
 4. 在 `docs/CHANGELOG.md` 記一筆
 
 D8 功能凍結後，契約不再變更。
+
+---
+
+## 受機器保護的條款
+
+以下規定由 `tests/smoke/test_contract_guards.py` 強制，改動會讓 CI 紅燈：
+
+- 拒答用 200 回應，沒有「資料不足」的錯誤碼
+- 拒答回傳值必含 missing_field / confirm_with / impact / reason
+- `region` 白名單只有 `tainan`
+- 契約文字不得出現跨區推定的措辭
+- schema 中 site / household / lighting / smart 的 `x-refusal` 必須存在
+
+要改這些不是不行，但要在 PR 描述說明為什麼，並同步改測試。
+讓 CI 紅燈然後刪測試——不行。
