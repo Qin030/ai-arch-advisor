@@ -63,8 +63,8 @@
 
 ```json
 {
-  "field": "lighting.color_temp",
-  "text": "主要生活空間希望偏暖黃、中性白，還是冷白？",
+  "field": "lighting",
+  "text": "主要生活空間希望偏暖黃、中性白，還是冷白？光感偏明亮還是柔和？",
   "reason": "影響燈具選型與迴路配置，事後變更可能涉及天花與線路調整。",
   "options": [
     { "value": "warm", "label": "暖黃（2700–3000K）" },
@@ -74,6 +74,13 @@
   "multi": false
 }
 ```
+
+`field` 帶的是 `x-ask-order` 的**欄位群名稱**（如 `lighting`），不是葉欄位
+（如 `lighting.color_temp`）。`x-ask-order` 六組各對應一題，一題可以一次
+回答該群底下的多個欄位——例如上面這題同時涵蓋 `color_temp` 與
+`brightness_preference`。`options`／`multi` 描述該群的主要單選或複選欄位；
+其餘欄位（自由文字、數字、布林開關）的形式與各群完整的問題文案、選項，
+見 `docs/specs/translation-tree.md`。
 
 `reason` 是必填。企畫書寫「每題均附提問理由」，這是產品定位的一部分，不是選配。
 
@@ -113,7 +120,7 @@ Base：`http://localhost:8000`
   "session_id": "sess-min-001",
   "requirement": { "session_id": "sess-min-001", "region": "tainan" },
   "detected_aspects": ["lighting", "circulation", "climate"],
-  "next_question": { "field": "site.zoning", "text": "...", "reason": "...", "options": [], "multi": false },
+  "next_question": { "field": "site", "text": "...", "reason": "...", "options": [], "multi": false },
   "progress": { "answered": 0, "total": 6 }
 }
 ```
@@ -128,12 +135,15 @@ Base：`http://localhost:8000`
 ```json
 {
   "session_id": "sess-min-001",
-  "field": "lighting.color_temp",
-  "value": "warm"
+  "field": "lighting",
+  "value": { "color_temp": "warm", "brightness_preference": "soft" }
 }
 ```
 
-`value` 型別依 schema 而定：單選是字串，複選是陣列，數字是數字。
+`field` 是欄位群名稱，不是葉欄位（見上方 `Question` 一節）。`value` 是物件，
+key 是該群底下要回答的葉欄位名稱；每個 key 的型別依 schema 而定：單選是
+字串，複選是陣列，數字是數字，布林開關是布林值。同一群裡沒填的葉欄位視為
+留白，不等於整題跳過。
 
 **Response 200**
 ```json
@@ -147,7 +157,7 @@ Base：`http://localhost:8000`
 
 `done: true` 代表追問結束（所有必填已填，或使用者標記「不需要」），可以呼叫 `/summary`。
 
-**跳過一題**：`{"session_id": "...", "field": "budget.total_twd", "skip": true}`。跳過的必填欄位會在結束前掃描時再問一次，仍不填則轉列待確認。
+**跳過一題**：`{"session_id": "...", "field": "budget", "skip": true}`。跳過的必填欄位會在結束前掃描時再問一次，仍不填則轉列待確認。
 
 ### `POST /summary`
 
