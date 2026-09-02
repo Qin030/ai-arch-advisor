@@ -1,13 +1,13 @@
 # API 與資料契約
 
-**⚠️ 尚未凍結，等待 M2 審核。** 這份 schema 目前是 M1 直接草擬、由 M1 的 agent 整理的——規劃書原本要求的「M2 從企畫書附錄抽出六個欄位群」這一步被跳過了。凍結程序：M2 拿企畫書附錄獨立對一遍 `schema/requirement.schema.json`，不同意的地方開 issue，而不是直接 approve。以下四項需要 M2 明確表態，寫死進 schema 後 D3 起再改就要動測試：
+**⚠️ 尚未凍結，issue #1 審查未通過。** M2 已於 2026-08-29 完成獨立審查（拿企畫書附錄獨立對一遍 `schema/requirement.schema.json`，見 issue #1），結論是「不同意凍結」，列出 4 個決定點與 7 項必修問題。原本待表態的四項，現況：
 
-- `region` 白名單只有 `tainan`
-- `site` 用 `anyOf`（地號或使用分區有一個就行）
-- `smart.scenes` 至少一項才算填
-- `project.floors` 上限四層
+- `region` 白名單只有 `tainan` —— M2 同意，執行路徑另在下方〈拒答與 HTTP 語意〉補上執行細節
+- `site` 用 `anyOf`（地號或使用分區有一個就行）—— M2 同意
+- `smart.scenes` 至少一項才算填 —— M2 同意
+- `project.floors` ~~上限四層~~ **固定為 2 層**（`minimum: 2, maximum: 2`，不是 1–2 的範圍）—— M2 不同意四層（附錄只有二層示例，無四層依據），已改，見 `docs/SCOPE.md`
 
-M2 review 通過並 approve 後，才算 Day 1 凍結；此後改動需 M1 與 M2 雙方 approve（見文末〈改契約的程序〉）。
+7 項必修問題正在 `fix/schema-m2-review` 分支處理，逐項對應見該 PR 描述。全部修正並經 M2 複審通過後才算 Day 1 凍結；此後改動需 M1 與 M2 雙方 approve（見文末〈改契約的程序〉）。
 
 這份文件與 `schema/requirement.schema.json` 是同一件事的兩面：schema 定義**資料**，本文件定義**傳輸**。程式碼有疑義時以這兩份為準。
 
@@ -15,11 +15,12 @@ M2 review 通過並 approve 後，才算 Day 1 凍結；此後改動需 M1 與 M
 
 ## 設計前提
 
-三個決定了整份契約形狀的前提：
+四個決定了整份契約形狀的前提：
 
 1. **拒答是回傳值，不是錯誤。** 資料不足時 HTTP 仍回 200，`refusals` 陣列有內容，其餘欄位照常產出。企畫書明講「其餘內容照常產出」——不要用 4xx 表達拒答。
 2. **追問決策樹由 schema 驅動。** `x-priority`、`x-question`、`x-question-reason` 都在 schema 裡，`question_tree.py` 讀它，不要在 Python 裡重複維護一份追問句。
 3. **狀態存在 server。** UI 只持有 `session_id`，不自己累積需求物件。避免兩邊對「目前收斂到哪」有不同認知。
+4. **值域限制不等於拒答。** 只有「使用者填了什麼」該用 schema 的 `type`／`required` 驗證失敗（400）；「填的東西合法但系統判斷不了」一律是拒答（200）。`region` 因此不用 `enum` 限制，見下方〈已知的欄位設計取捨〉。
 
 ---
 
@@ -33,7 +34,14 @@ M2 review 通過並 approve 後，才算 Day 1 凍結；此後改動需 M1 與 M
 |---|---|
 | `minimal.json` | 剛好滿足必填的最小輸入 |
 | `complete.json` | 六個欄位群全填（企畫書情境一的郭先生） |
-| `refusal_triggered.json` | 缺 `site` 與 `household`，觸發兩條拒答 |
+| `refusal_triggered.json` | 缺 `site` 與 `household`，同時觸發兩條拒答 |
+| `refusal_region.json` | `region` 不在允許清單，觸發全部法規判定拒答 |
+| `refusal_site.json` | 缺 `site`，單獨觸發一條拒答 |
+| `refusal_household.json` | 缺 `household`，單獨觸發一條拒答 |
+| `refusal_lighting.json` | 缺 `lighting`，單獨觸發一條拒答 |
+| `refusal_smart.json` | 缺 `smart`，單獨觸發一條拒答 |
+
+六個必測拒答情境（見 `app/rules/CLAUDE.md`）裡，只有五個能用 request 範例示範——「成本資料版本過期」判斷的是知識庫切片的 metadata，不是使用者輸入，沒有對應的 request 欄位可以在這裡示範，測試落在檢索／rules 層而非這份契約。
 
 ### `Refusal`
 
@@ -223,6 +231,16 @@ Day 1 只有這一個 endpoint 是真的，其餘回 501。`/health` 是 `make d
 | D7 | `plans` 接真的方案比較 |
 
 **UI 從 D2 起就寫死呼叫這三個 endpoint，不隨階段改。** 後端換掉假資料時 UI 一行都不用動——`ui/client.py` 是唯一的接觸點。
+
+---
+
+## 已知的欄位設計取捨
+
+出自 issue #1 M2 審查，決定後記在這裡，避免下次改動時重新爭論一次。
+
+**`region` 不用 `enum`。** 早期草稿把允許清單寫在 schema 的 `enum` 裡，非臺南的請求會被 FastAPI／pydantic 在進入業務邏輯前就擋掉，回 422——但〈設計前提〉第 1 條規定拒答一律 200。改法：schema 的 `region` 只宣告 `type: string`，允許清單移到 `app/core/config.py` 的 `region_allowlist`，由 rules 層比對後產生標準四欄位拒答；`x-refusal` 留在 schema 當文件，不當驗證規則用。
+
+**`budget.total_twd` 維持單值，不改成區間。** 企畫書附錄用「預算區間」描述，但使用者實際說的是「大概兩千萬」這種點估計，改成要求輸入上下限會讓追問從 5–7 題變多題，超出 MVP 的追問題數預算。改法：輸入收單值（`x-question` 已加註「大概的數字就好」），成本推估時由 rules 層套 `±15%` 產生輸出區間——輸入是點、輸出是區間，也更誠實地反映使用者本來就給不出精確區間這件事。
 
 ---
 

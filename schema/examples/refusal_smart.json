@@ -1,0 +1,7 @@
+{
+  "session_id": "sess-refusal-smart-001",
+  "region": "tainan",
+  "site": { "land_number": "123" },
+  "household": { "members": 3 },
+  "lighting": { "color_temp": "warm" }
+}

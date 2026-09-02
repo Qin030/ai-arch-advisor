@@ -1,0 +1,7 @@
+{
+  "session_id": "sess-refusal-household-001",
+  "region": "tainan",
+  "site": { "land_number": "123" },
+  "lighting": { "color_temp": "warm" },
+  "smart": { "control_mode": "app", "scenes": ["security"] }
+}

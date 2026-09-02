@@ -9,7 +9,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, model_validator
 
-Region = Literal["tainan"]
 ColorTemp = Literal["warm", "neutral", "cool"]
 ControlMode = Literal["voice", "app", "both"]
 Scene = Literal["arrive_home", "leave_home", "sleep", "security", "lighting"]
@@ -34,7 +33,10 @@ class Site(BaseModel):
 
 class Project(BaseModel):
     building_type: Literal["detached_house"] | None = None
-    floors: int | None = Field(default=None, ge=1, le=4)
+    # Fixed at 2, not a 1-2 range: MVP scenario in docs/SCOPE.md is locked to
+    # "二層透天". A range would silently accept 1 floor, which issue #1's
+    # review caught as inconsistent with that lock.
+    floors: Literal[2] | None = None
     planned_floor_area_ping: float | None = None
 
 
@@ -80,7 +82,11 @@ class Power(BaseModel):
 
 class Requirement(BaseModel):
     session_id: str
-    region: Region
+    # Plain str, not Literal["tainan"]: a Literal would make pydantic reject an
+    # out-of-allowlist region at deserialization (422), but CONTRACT.md requires
+    # refusal to be a 200. The allowlist check happens in the rules layer against
+    # app.core.config.settings.region_allowlist instead.
+    region: str
     site: Site | None = None
     project: Project | None = None
     household: Household | None = None

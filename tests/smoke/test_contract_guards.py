@@ -13,6 +13,9 @@ from pathlib import Path
 
 import pytest
 
+from app.core.config import Settings
+from app.core.models import Project
+
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT = (ROOT / "docs" / "CONTRACT.md").read_text("utf-8")
 
@@ -38,10 +41,15 @@ def test_contract_documents_the_four_refusal_fields():
         assert f in CONTRACT, f"CONTRACT.md 未記載拒答欄位 {f}"
 
 
-def test_region_allowlist_has_exactly_one_region(schema):
+def test_region_allowlist_has_exactly_one_region():
     # 跨區推定是這個產品最不能犯的錯。加地區必須同時加知識庫切片，
     # 所以擴充白名單是刻意的決定，不該悄悄發生。
-    assert schema["properties"]["region"]["enum"] == ["tainan"]
+    #
+    # 白名單不再放在 schema 的 enum 裡：enum 驗證失敗會被 FastAPI 轉成
+    # 422，但 CONTRACT.md 規定拒答一律 200，所以改成 rules 層依
+    # app.core.config.settings.region_allowlist 比對。檢查對象換成
+    # config 的宣告值，而不是放寬標準。
+    assert Settings.model_fields["region_allowlist"].default == ["tainan"]
 
 
 def test_no_fallback_inference_language_in_contract():
@@ -55,3 +63,18 @@ def test_refusal_scenarios_survive_in_schema(schema, field):
     # app/rules/CLAUDE.md 的六個必測情境，有四個由 schema 的 x-refusal 承載。
     # 少了任何一個代表拒答被拿掉了。
     assert "x-refusal" in schema["properties"][field], f"{field} 的拒答定義不見了"
+
+
+def test_floors_is_fixed_at_two_not_a_range(schema):
+    # docs/SCOPE.md 鎖定的情境是「二層透天」，不是「最多兩層」。issue #1
+    # review 抓到早期修正把 maximum 從 4 改成 2，卻沒動 minimum，1 層仍會
+    # 通過驗證——minimum 與 maximum 都鎖 2（等價於 const，但擴充成其他
+    # 樓層數時只要改這兩個數字），1 層與 3 層都必須被拒絕。
+    floors_schema = schema["properties"]["project"]["properties"]["floors"]
+    assert floors_schema["minimum"] == 2
+    assert floors_schema["maximum"] == 2
+
+    Project(floors=2)
+    for bad in (1, 3):
+        with pytest.raises(ValueError):
+            Project(floors=bad)
