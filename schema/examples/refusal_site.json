@@ -1,0 +1,7 @@
+{
+  "session_id": "sess-refusal-site-001",
+  "region": "tainan",
+  "household": { "members": 3 },
+  "lighting": { "color_temp": "warm" },
+  "smart": { "control_mode": "app", "scenes": ["security"] }
+}

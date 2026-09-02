@@ -13,6 +13,8 @@ from pathlib import Path
 
 import pytest
 
+from app.core.config import Settings
+
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT = (ROOT / "docs" / "CONTRACT.md").read_text("utf-8")
 
@@ -38,10 +40,15 @@ def test_contract_documents_the_four_refusal_fields():
         assert f in CONTRACT, f"CONTRACT.md 未記載拒答欄位 {f}"
 
 
-def test_region_allowlist_has_exactly_one_region(schema):
+def test_region_allowlist_has_exactly_one_region():
     # 跨區推定是這個產品最不能犯的錯。加地區必須同時加知識庫切片，
     # 所以擴充白名單是刻意的決定，不該悄悄發生。
-    assert schema["properties"]["region"]["enum"] == ["tainan"]
+    #
+    # 白名單不再放在 schema 的 enum 裡：enum 驗證失敗會被 FastAPI 轉成
+    # 422，但 CONTRACT.md 規定拒答一律 200，所以改成 rules 層依
+    # app.core.config.settings.region_allowlist 比對。檢查對象換成
+    # config 的宣告值，而不是放寬標準。
+    assert Settings.model_fields["region_allowlist"].default == ["tainan"]
 
 
 def test_no_fallback_inference_language_in_contract():

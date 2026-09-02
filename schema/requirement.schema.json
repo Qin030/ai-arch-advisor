@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/OWNER/ai-arch-advisor/schema/requirement.schema.json",
+  "$id": "https://github.com/Qin030/ai-arch-advisor/schema/requirement.schema.json",
   "title": "結構化住宅需求",
   "description": "收斂層的輸出格式。x- 開頭的自訂欄位同時定義追問決策樹，question_tree.py 直接讀這份檔案，不要在程式碼裡重複一份。",
   "type": "object",
@@ -24,8 +24,7 @@
 
     "region": {
       "type": "string",
-      "enum": ["tainan"],
-      "description": "適用地區。不在 enum 內即觸發拒答，不得以鄰近地區規定推定。MVP 只有臺南。",
+      "description": "適用地區。允許清單見 app/core/config.py 的 region_allowlist（MVP 只有臺南），不在清單內即觸發拒答，不得以鄰近地區規定推定。刻意不在此處用 enum 限制值域：enum 驗證失敗會被 FastAPI 轉成 422，而 CONTRACT.md 明訂拒答一律 200，因此改由 rules 層依允許清單比對後產生下列拒答。",
       "x-refusal": {
         "when_invalid": "all_regulation",
         "confirm_with": "建築師",
@@ -41,10 +40,12 @@
       "properties": {
         "land_number": {
           "type": "string",
+          "minLength": 1,
           "description": "地號"
         },
         "zoning": {
           "type": "string",
+          "minLength": 1,
           "description": "使用分區"
         },
         "district": {
@@ -56,7 +57,7 @@
         { "required": ["land_number"] },
         { "required": ["zoning"] }
       ],
-      "x-question": "請問基地的地號或使用分區是什麼？若還不確定，也可以先告訴我在哪一個行政區。",
+      "x-question": "請問基地的地號或使用分區是什麼？行政區可先記錄，但仍須補地號或使用分區才能判定法規。",
       "x-question-reason": "建蔽率、容積率與退縮規定依使用分區而定，缺少這項就無法判定可建規模。",
       "x-refusal": {
         "blocks": ["building_coverage_ratio", "floor_area_ratio", "setback"],
@@ -80,7 +81,8 @@
         "floors": {
           "type": "integer",
           "minimum": 1,
-          "maximum": 4
+          "maximum": 2,
+          "description": "MVP 鎖臺南二層透天（見 docs/SCOPE.md），非擴充上限"
         },
         "planned_floor_area_ping": {
           "type": "number",
@@ -138,7 +140,7 @@
           "description": "預算涵蓋範圍。成本區間僅就 structure 推估"
         }
       },
-      "x-question": "整體預算大約多少？這筆預算是否包含土地、室內裝修或外構？",
+      "x-question": "整體預算大約多少？大概的數字就好。這筆預算是否包含土地、室內裝修或外構？",
       "x-question-reason": "工程費區間以每坪單價推估，涵蓋範圍不同會差很多。"
     },
 

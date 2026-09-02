@@ -1,0 +1,8 @@
+{
+  "session_id": "sess-refusal-region-001",
+  "region": "taichung",
+  "site": { "land_number": "123" },
+  "household": { "members": 3 },
+  "lighting": { "color_temp": "warm" },
+  "smart": { "control_mode": "app", "scenes": ["security"] }
+}

@@ -9,7 +9,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, model_validator
 
-Region = Literal["tainan"]
 ColorTemp = Literal["warm", "neutral", "cool"]
 ControlMode = Literal["voice", "app", "both"]
 Scene = Literal["arrive_home", "leave_home", "sleep", "security", "lighting"]
@@ -34,7 +33,7 @@ class Site(BaseModel):
 
 class Project(BaseModel):
     building_type: Literal["detached_house"] | None = None
-    floors: int | None = Field(default=None, ge=1, le=4)
+    floors: int | None = Field(default=None, ge=1, le=2)
     planned_floor_area_ping: float | None = None
 
 
@@ -80,7 +79,11 @@ class Power(BaseModel):
 
 class Requirement(BaseModel):
     session_id: str
-    region: Region
+    # Plain str, not Literal["tainan"]: a Literal would make pydantic reject an
+    # out-of-allowlist region at deserialization (422), but CONTRACT.md requires
+    # refusal to be a 200. The allowlist check happens in the rules layer against
+    # app.core.config.settings.region_allowlist instead.
+    region: str
     site: Site | None = None
     project: Project | None = None
     household: Household | None = None

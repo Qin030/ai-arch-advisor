@@ -29,6 +29,8 @@
 | 2 | 無家庭成員資料 | 空間配置建議 | — |
 | 3 | 地區非臺南（未收錄） | 一切法規判定 | 建築師 |
 | 4 | 成本資料版本過期 | 不直接引用，須附過期警示 | — |
+
+情境 4 不由 `schema/requirement.schema.json` 的 `x-refusal` 承載——過期是知識庫切片的屬性，不是使用者輸入的欄位，request schema 沒有對應欄位可填。判斷邏輯：檢索回來的切片比對 `KB_STALE_DAYS`（見 `app/core/config.py`），超過門檻在對應 `Citation.stale`（見 `app/core/models.py`）標記為 `true` 並附過期警示，不是拋出拒答的四欄位。其餘五個情境（1、2、3、5、6）才是 schema 的 `x-refusal` 承載的。
 | 5 | `smart.scenes` 未填 | 弱電、網路孔位、設備電源描述 | 中華電信 |
 | 6 | `lighting.color_temp` 未填 | 色溫描述 | 室內設計師 |
 
