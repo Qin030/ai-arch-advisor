@@ -33,7 +33,10 @@ class Site(BaseModel):
 
 class Project(BaseModel):
     building_type: Literal["detached_house"] | None = None
-    floors: int | None = Field(default=None, ge=1, le=2)
+    # Fixed at 2, not a 1-2 range: MVP scenario in docs/SCOPE.md is locked to
+    # "二層透天". A range would silently accept 1 floor, which issue #1's
+    # review caught as inconsistent with that lock.
+    floors: Literal[2] | None = None
     planned_floor_area_ping: float | None = None
 
 

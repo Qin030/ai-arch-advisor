@@ -80,9 +80,8 @@
         },
         "floors": {
           "type": "integer",
-          "minimum": 1,
-          "maximum": 2,
-          "description": "MVP 鎖臺南二層透天（見 docs/SCOPE.md），非擴充上限"
+          "const": 2,
+          "description": "MVP 鎖臺南二層透天（見 docs/SCOPE.md），固定為 2，不是上限"
         },
         "planned_floor_area_ping": {
           "type": "number",
