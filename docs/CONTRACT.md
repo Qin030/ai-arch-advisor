@@ -5,7 +5,7 @@
 - `region` 白名單只有 `tainan` —— M2 同意，執行路徑另在下方〈拒答與 HTTP 語意〉補上執行細節
 - `site` 用 `anyOf`（地號或使用分區有一個就行）—— M2 同意
 - `smart.scenes` 至少一項才算填 —— M2 同意
-- `project.floors` ~~上限四層~~ **固定為 2 層**（`const: 2`，不是 1–2 的範圍）—— M2 不同意四層（附錄只有二層示例，無四層依據），已改，見 `docs/SCOPE.md`
+- `project.floors` ~~上限四層~~ **固定為 2 層**（`minimum: 2, maximum: 2`，不是 1–2 的範圍）—— M2 不同意四層（附錄只有二層示例，無四層依據），已改，見 `docs/SCOPE.md`
 
 7 項必修問題正在 `fix/schema-m2-review` 分支處理，逐項對應見該 PR 描述。全部修正並經 M2 複審通過後才算 Day 1 凍結；此後改動需 M1 與 M2 雙方 approve（見文末〈改契約的程序〉）。
 
