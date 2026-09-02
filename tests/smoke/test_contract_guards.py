@@ -68,8 +68,11 @@ def test_refusal_scenarios_survive_in_schema(schema, field):
 def test_floors_is_fixed_at_two_not_a_range(schema):
     # docs/SCOPE.md 鎖定的情境是「二層透天」，不是「最多兩層」。issue #1
     # review 抓到早期修正把 maximum 從 4 改成 2，卻沒動 minimum，1 層仍會
-    # 通過驗證——用 const 而非 range，1 層與 3 層都必須被拒絕。
-    assert schema["properties"]["project"]["properties"]["floors"]["const"] == 2
+    # 通過驗證——minimum 與 maximum 都鎖 2（等價於 const，但擴充成其他
+    # 樓層數時只要改這兩個數字），1 層與 3 層都必須被拒絕。
+    floors_schema = schema["properties"]["project"]["properties"]["floors"]
+    assert floors_schema["minimum"] == 2
+    assert floors_schema["maximum"] == 2
 
     Project(floors=2)
     for bad in (1, 3):
