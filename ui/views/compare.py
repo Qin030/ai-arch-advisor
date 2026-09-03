@@ -4,7 +4,6 @@ import streamlit as st
 
 from ui.client import ApiError, client
 
-
 st.markdown('<div class="advisor-kicker">Plan comparison</div>', unsafe_allow_html=True)
 st.title("多方案比較")
 st.markdown('<div class="advisor-rule"></div>', unsafe_allow_html=True)

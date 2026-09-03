@@ -4,7 +4,6 @@ from pathlib import Path
 
 import streamlit as st
 
-
 st.set_page_config(
     page_title="築意｜建築前期決策助理",
     page_icon=None,

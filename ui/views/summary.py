@@ -42,7 +42,9 @@ metric_cols[0].metric("已填", len(scan.get("filled", [])))
 metric_cols[1].metric("可推定未確認", len(scan.get("assumed", [])))
 metric_cols[2].metric("缺漏", len(scan.get("missing", [])))
 
-building_tab, digital_tab, confirm_tab = st.tabs(["建築需求摘要", "家庭數位生活需求", "待專業人員確認"])
+building_tab, digital_tab, confirm_tab = st.tabs(
+    ["建築需求摘要", "家庭數位生活需求", "待專業人員確認"]
+)
 with building_tab:
     render_sections("建築需求摘要", summary.get("building_summary", {}))
 with digital_tab:

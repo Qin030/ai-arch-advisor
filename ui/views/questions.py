@@ -69,7 +69,9 @@ else:
         with st.form("question-form"):
             value = question_input(question)
             answer_col, skip_col = st.columns([3, 1])
-            answer = answer_col.form_submit_button("送出回答", type="primary", use_container_width=True)
+            answer = answer_col.form_submit_button(
+                "送出回答", type="primary", use_container_width=True
+            )
             skip = skip_col.form_submit_button("暫時跳過", use_container_width=True)
         try:
             if answer:
