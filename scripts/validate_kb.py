@@ -67,8 +67,12 @@ def check_slice(path: Path) -> list[str]:
     if data.get("type") and path.parent.name != data.get("type"):
         errors.append(f"檔案放在 {path.parent.name}/ 但 type 是 {data.get('type')}")
 
-    if "scope_condition" in data and not str(data.get("scope_condition") or "").strip():
-        errors.append("scope_condition 存在但是空字串——有這個欄位就要填內容，不然刪掉它")
+    if "scope_condition" in data:
+        sc = data.get("scope_condition")
+        if not isinstance(sc, str):
+            errors.append(f"scope_condition 必須是字串，得到 {type(sc).__name__}: {sc!r}")
+        elif not sc.strip():
+            errors.append("scope_condition 存在但是空字串——有這個欄位就要填內容，不然刪掉它")
 
     if "content_type" in data and data.get("content_type") not in CONTENT_TYPES:
         errors.append(f"content_type 必須是 {CONTENT_TYPES}，得到 {data.get('content_type')}")
