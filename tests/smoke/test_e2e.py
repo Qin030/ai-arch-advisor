@@ -25,6 +25,18 @@ def test_turn_unknown_session_is_404_not_500(client):
     assert r.status_code == 404
 
 
+def test_turn_rejects_leaf_style_value(client):
+    # docs/CONTRACT.md's Question/turn are group-level: `value` is an object
+    # bundling that group's leaf fields, not a bare scalar. A leaf-style
+    # request (the shape the old contract example used) must not validate.
+    start = client.post("/session/start", json={"utterance": "test"})
+    session_id = start.json()["session_id"]
+    r = client.post(
+        "/turn", json={"session_id": session_id, "field": "lighting", "value": "warm"}
+    )
+    assert r.status_code == 422
+
+
 def test_fixture_flow_walks_ask_order_to_summary(client):
     start = client.post("/session/start", json={"utterance": "我想蓋一棟兩層樓的透天厝"})
     assert start.status_code == 200
@@ -33,17 +45,24 @@ def test_fixture_flow_walks_ask_order_to_summary(client):
     assert body["next_question"]["field"] == ASK_ORDER[0]
     assert body["progress"] == {"answered": 0, "total": len(ASK_ORDER)}
 
-    # Walk every remaining group. The submitted field/value is ignored by
-    # design at this stage, so any placeholder answer works.
+    # Walk every remaining group. `value` must at least be shaped like the
+    # contract's group-level object even though D2's fixture ignores its
+    # content by design — this is what PR review caught: a bare string
+    # only proves D2 ignores input, not that it holds the request shape.
     for expected_answered in range(1, len(ASK_ORDER)):
-        turn = client.post("/turn", json={"session_id": session_id, "field": "x", "value": "x"})
+        turn = client.post(
+            "/turn",
+            json={"session_id": session_id, "field": "x", "value": {"answer": "x"}},
+        )
         assert turn.status_code == 200
         turn_body = turn.json()
         assert turn_body["progress"]["answered"] == expected_answered
         assert turn_body["next_question"]["field"] == ASK_ORDER[expected_answered]
         assert turn_body["done"] is False
 
-    final = client.post("/turn", json={"session_id": session_id, "field": "x", "value": "x"})
+    final = client.post(
+        "/turn", json={"session_id": session_id, "field": "x", "value": {"answer": "x"}}
+    )
     assert final.status_code == 200
     final_body = final.json()
     assert final_body["done"] is True

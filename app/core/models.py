@@ -150,7 +150,10 @@ class StartRequest(BaseModel):
 class TurnRequest(BaseModel):
     session_id: str
     field: str | None = None
-    value: object | None = None
+    # A group answer bundles that group's leaf fields in one object (see
+    # docs/CONTRACT.md's Question section) — not a bare scalar like a
+    # leaf-field turn would use.
+    value: dict[str, object] | None = None
     skip: bool = False
 
 
