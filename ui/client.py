@@ -14,7 +14,8 @@ class ApiError(RuntimeError):
 
 class AdvisorClient:
     def __init__(self, base_url: str | None = None, timeout: float = 15.0) -> None:
-        self.base_url = (base_url or os.getenv("ADVISOR_API_URL", "http://localhost:8000")).rstrip("/")
+        configured_url = base_url or os.getenv("ADVISOR_API_URL", "http://localhost:8000")
+        self.base_url = configured_url.rstrip("/")
         self.timeout = timeout
 
     def start(self, utterance: str) -> dict[str, Any]:

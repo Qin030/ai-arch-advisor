@@ -52,7 +52,9 @@ with confirm_tab:
     if not confirmations:
         st.success("目前沒有待確認事項。")
     for item in confirmations:
-        st.markdown(f"**{item.get('missing_field', '未指定欄位')}｜請洽 {item.get('confirm_with', '專業人員')}**")
+        missing_field = item.get("missing_field", "未指定欄位")
+        confirm_with = item.get("confirm_with", "專業人員")
+        st.markdown(f"**{missing_field}｜請洽 {confirm_with}**")
         st.write(item.get("reason", ""))
         st.caption("影響範圍：" + item.get("impact", "待確認"))
 

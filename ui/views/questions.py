@@ -60,10 +60,12 @@ else:
     question = st.session_state.get("question")
     if question:
         st.subheader(question.get("text", "請補充以下資訊"))
-        st.markdown(
-            f'<div class="question-reason"><strong>為什麼問這題</strong><br>{question.get("reason", "有助於釐清設計條件。")}</div>',
-            unsafe_allow_html=True,
+        reason = question.get("reason", "有助於釐清設計條件。")
+        reason_html = (
+            '<div class="question-reason"><strong>為什麼問這題</strong><br>'
+            f"{reason}</div>"
         )
+        st.markdown(reason_html, unsafe_allow_html=True)
         with st.form("question-form"):
             value = question_input(question)
             answer_col, skip_col = st.columns([3, 1])

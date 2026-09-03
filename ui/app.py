@@ -12,7 +12,8 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-st.markdown(f"<style>{Path(__file__).with_name('style.css').read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
+stylesheet = Path(__file__).with_name("style.css").read_text(encoding="utf-8")
+st.markdown(f"<style>{stylesheet}</style>", unsafe_allow_html=True)
 
 pages = {
     "開始規劃": [st.Page("views/questions.py", title="智慧追問")],
