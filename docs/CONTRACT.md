@@ -78,9 +78,26 @@
 `field` 帶的是 `x-ask-order` 的**欄位群名稱**（如 `lighting`），不是葉欄位
 （如 `lighting.color_temp`）。`x-ask-order` 六組各對應一題，一題可以一次
 回答該群底下的多個欄位——例如上面這題同時涵蓋 `color_temp` 與
-`brightness_preference`。`options`／`multi` 描述該群的主要單選或複選欄位；
-其餘欄位（自由文字、數字、布林開關）的形式與各群完整的問題文案、選項，
-見 `docs/specs/translation-tree.md`。
+`brightness_preference`。
+
+**一組可能同時有數字、單選、複選、布林等多種葉欄位，但 `Question` 只有
+一組 `options`／`multi`。** 不擴充 `Question` 的結構去描述每個子欄位各自
+的控制項——UI 依 `field`（群組名稱）硬編碼固定表單，`options`／`multi`
+只代表該群裡「主要」的那個列舉型欄位；其餘葉欄位（自由文字、數字、布林
+開關、次要的列舉欄位）由 UI 依下表固定渲染，不在 `Question` 回應裡描述：
+
+| 群組 | `options`／`multi` 代表的主要欄位 | 該群另外固定渲染的欄位（不在 `Question` 裡） |
+|---|---|---|
+| `site` | 無（無列舉欄位，`options: []`, `multi: false`） | `land_number`、`zoning`（文字，至少一項）、`district`（文字，選填） |
+| `household` | `routines`（複選，選填） | `members`（數字，必填）、`has_elderly`／`has_children`（布林，選填） |
+| `budget` | `includes`（複選，選填） | `total_twd`（數字，選填） |
+| `lighting` | `color_temp`（單選，必填，即上方範例） | `brightness_preference`（單選，選填）、`dimmable`／`scene_control`（布林，選填） |
+| `circulation` | `priorities`（複選，選填） | `storage_locations`（複選，選填） |
+| `smart` | `scenes`（複選，必填，至少 1 項） | `control_mode`（單選，必填）、`devices`（複選，選填） |
+
+每組的完整問題文案、每個欄位的選項與人類可讀標籤，見
+`docs/specs/translation-tree.md`——這份契約只定義哪個欄位進 `Question`
+信封，不重複列每個選項的文案。
 
 `reason` 是必填。企畫書寫「每題均附提問理由」，這是產品定位的一部分，不是選配。
 
@@ -155,9 +172,17 @@ key 是該群底下要回答的葉欄位名稱；每個 key 的型別依 schema 
 }
 ```
 
-`done: true` 代表追問結束（所有必填已填，或使用者標記「不需要」），可以呼叫 `/summary`。
+`done: true` 代表 `x-ask-order` 六組都已經處理過一次（不論答了、跳過、或
+格式錯誤），可以呼叫 `/summary`。**`/turn` 的流程只前進、不重問**——同一組
+在這個迴圈裡最多出現一次，`progress`／`done` 的計算完全依照這個規則，
+與「有沒有跳過」無關。
 
-**跳過一題**：`{"session_id": "...", "field": "budget", "skip": true}`。跳過的必填欄位會在結束前掃描時再問一次，仍不填則轉列待確認。
+**跳過一題**：`{"session_id": "...", "field": "budget", "skip": true}`。
+跳過**不會**讓 `/turn` 在之後重新問這一組——那是另一個機制：跳過的必填
+欄位會出現在 `/summary` 的 `scan.missing` 與 `confirmations`（D5 的結束
+前需求掃描，見 `docs/SCOPE.md`〈做（十項）〉#7），讓使用者在看摘要時知道
+還有什麼沒填，而不是被追問流程本身問第二次。**這個掃描不算進
+`docs/SCOPE.md` 的「5–7 題」——那個數字只計 `x-ask-order` 的六組。**
 
 ### `POST /summary`
 
