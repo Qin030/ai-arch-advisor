@@ -13,9 +13,14 @@ description: 開工檢查，回報現在該做什麼
 3. `gh pr list` 與 `gh issue list --state open`
 4. `gh run list --limit 3` 看 CI 最近的結果
 5. `gh pr list --json number,title,createdAt,reviewDecision` 逐筆檢查
-   `createdAt`：開了超過 24 小時、`reviewDecision` 仍是 null/PENDING 的
-   PR 全部列出來，標記為需要立刻處理——這是 D1 那次 PR #3 卡了四天沒人
-   發現的直接對策
+   `createdAt`：開了超過 24 小時、`reviewDecision` 是 `null` 或
+   `REVIEW_REQUIRED` 的 PR 全部列出來，標記為需要立刻處理——這是 D1 那次
+   PR #3 卡了四天沒人發現的直接對策。（`reviewDecision` 沒有 `PENDING`
+   這個值；GitHub 的實際值是 `APPROVED`、`CHANGES_REQUESTED`、
+   `REVIEW_REQUIRED` 或 `null`——這個 repo 開了「Required approvals: 1」，
+   所以任何還沒拿到核准的 PR 平常就會是 `REVIEW_REQUIRED`，不是
+   `null`，只查 `null` 幾乎抓不到東西。）若要更精確判斷「完全沒人看過」
+   而不只是「還沒核准」，改查 `gh pr view <n> --json reviews` 是否為空。
 6. 對照 `docs/PLAN.md` 中 STATE.md 標示的那一天
 
 輸出：
