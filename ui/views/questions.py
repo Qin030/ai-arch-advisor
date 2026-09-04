@@ -4,6 +4,15 @@ import streamlit as st
 
 from ui.client import ApiError, client
 
+PRIMARY_FIELDS = {
+    "site": "land_number",
+    "household": "routines",
+    "budget": "includes",
+    "lighting": "color_temp",
+    "circulation": "priorities",
+    "smart": "scenes",
+}
+
 
 def heading() -> None:
     st.markdown('<div class="advisor-kicker">Guided briefing</div>', unsafe_allow_html=True)
@@ -31,6 +40,15 @@ def question_input(question: dict):
         chosen = st.radio("請選擇一項", labels, index=None)
         return labels.get(chosen)
     return st.text_input("你的回答", placeholder="請輸入你目前知道的資訊")
+
+
+def answer_payload(question: dict, value):
+    """Wrap a group's primary answer in the object required by /turn."""
+    group = question.get("field")
+    leaf = PRIMARY_FIELDS.get(group)
+    if leaf is None:
+        raise ApiError("服務回傳了無法辨識的問題欄位。")
+    return {leaf: value}
 
 
 heading()
@@ -75,7 +93,10 @@ else:
             skip = skip_col.form_submit_button("暫時跳過", use_container_width=True)
         try:
             if answer:
-                save_response(client.answer(st.session_state.session_id, question["field"], value))
+                payload = answer_payload(question, value)
+                save_response(
+                    client.answer(st.session_state.session_id, question["field"], payload)
+                )
                 st.rerun()
             if skip:
                 save_response(client.skip(st.session_state.session_id, question["field"]))
