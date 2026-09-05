@@ -40,7 +40,7 @@ content: |
 選填欄位：
 
 ```yaml
-scope_condition: 防火構造建築物；排除基地鄰接寬度六公尺以上道路或深度六公尺以上永久性空地側
+scope_condition: （這筆條文的適用前提，逐字抄原文）  # TODO: 待人工查證後填入
 content_type: text        # text | figure，預設 text
 ```
 
@@ -54,6 +54,11 @@ content_type: text        # text | figure，預設 text
 
 漏填的後果：模型會把有前提的數值當成無條件成立，等於系統自己做了「這個
 基地符合前提」的推定——這正是規則層明文禁止的事。
+
+**這裡刻意不放真實條文的前提當範例**，理由同下方〈`version_date` 的定義〉：
+任何實例都必須是人工開啟原文核對過的結果，agent 查來的不算。上面欄位裡寫的
+是占位描述，不是可以照抄的內容——真正的前提逐字抄原文，抄不到就寫
+`TODO: 待人工查證`，不要填看起來合理的構造別、距離或鄰接條件。
 
 ### `version_date` 的定義：不是頁首日期
 
@@ -70,8 +75,6 @@ content_type: text        # text | figure，預設 text
 
 蒐集原文時，逐條點進沿革頁核對，不要只看頁首；核對到的具體條號與日期
 記進 `data/kb/VERIFIED.md`，不要寫在這份說明文件裡當範例。
-
-
 
 ### `content_type`：條文文字與圖例分開記
 

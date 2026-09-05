@@ -74,8 +74,16 @@ def check_slice(path: Path) -> list[str]:
         elif not sc.strip():
             errors.append("scope_condition 存在但是空字串——有這個欄位就要填內容，不然刪掉它")
 
-    if "content_type" in data and data.get("content_type") not in CONTENT_TYPES:
-        errors.append(f"content_type 必須是 {CONTENT_TYPES}，得到 {data.get('content_type')}")
+    if "content_type" in data:
+        # isinstance before the allowlist, not after: `content_type: []` in the
+        # YAML lands here as a list, and `[] in {...}` is a TypeError, not False.
+        # The gate would crash instead of reporting the bad field — and a
+        # validator that dies on malformed input fails exactly when it is needed.
+        ct = data.get("content_type")
+        if not isinstance(ct, str):
+            errors.append(f"content_type 必須是字串，得到 {type(ct).__name__}: {ct!r}")
+        elif ct not in CONTENT_TYPES:
+            errors.append(f"content_type 必須是 {sorted(CONTENT_TYPES)} 其中之一，得到 {ct!r}")
 
     if data.get("region") not in REGIONS:
         errors.append(f"region 必須在白名單 {REGIONS} 內，得到 {data.get('region')}")
