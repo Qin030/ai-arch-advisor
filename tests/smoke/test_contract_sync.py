@@ -4,7 +4,7 @@ They are two hand-maintained copies of one contract, so nothing stops someone
 adding a required field to one and not the other. This test is that stop.
 """
 
-from app.core.models import Requirement
+from app.core.models import Requirement, RequirementDraft
 
 
 def test_top_level_fields_match(schema):
@@ -41,3 +41,16 @@ def test_every_refusal_has_all_four_fields(schema):
 def test_examples_parse_as_requirements(example):
     for name in ("minimal", "complete", "refusal_triggered"):
         Requirement.model_validate(example(name))
+
+
+def test_draft_carries_the_same_groups_as_requirement():
+    """RequirementDraft is a second hand-maintained twin; this is its drift guard.
+
+    It exists because a half-answered group cannot validate as a Requirement
+    (see the class docstring and issue #22). That is a loosening of the *rules*,
+    not of the *shape* — a group that exists in one and not the other means the
+    two have come apart.
+    """
+    full = set(Requirement.model_fields)
+    draft = set(RequirementDraft.model_fields)
+    assert draft == full, f"僅在 Requirement: {full - draft}｜僅在 RequirementDraft: {draft - full}"

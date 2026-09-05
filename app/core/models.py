@@ -98,6 +98,39 @@ class Requirement(BaseModel):
     power: Power | None = None
 
 
+class RequirementDraft(BaseModel):
+    """What the server has collected so far — not a finished Requirement.
+
+    Requirement's group models mark members / color_temp / control_mode / scenes
+    required, and Site needs land_number or zoning. That is right for a
+    *complete* requirement and wrong for one still being collected: /turn has to
+    answer with whatever is filled so far (docs/CONTRACT.md 〈POST /turn〉),
+    including a group the user left blank or skipped, and none of those would
+    validate as a Requirement.
+
+    So the in-progress state gets its own envelope. Group values are the raw
+    answer objects, already checked against the schema's declared types at
+    intake by app.core.question_tree. Whether they are *complete* is D5's
+    pre-summary scan, not this model's job.
+
+    This split is provisional — issue #22 is settling where the line between
+    /turn's validation and D5's scan actually falls. If it lands the other way,
+    this class is what goes away.
+    """
+
+    session_id: str
+    region: str
+    site: dict[str, object] | None = None
+    project: dict[str, object] | None = None
+    household: dict[str, object] | None = None
+    budget: dict[str, object] | None = None
+    lighting: dict[str, object] | None = None
+    circulation: dict[str, object] | None = None
+    smart: dict[str, object] | None = None
+    network: dict[str, object] | None = None
+    power: dict[str, object] | None = None
+
+
 # --- refusal ------------------------------------------------------------------
 
 
@@ -171,14 +204,14 @@ class Progress(BaseModel):
 
 class StartResponse(BaseModel):
     session_id: str
-    requirement: Requirement
+    requirement: RequirementDraft
     detected_aspects: list[str] = []
     next_question: Question
     progress: Progress
 
 
 class TurnResponse(BaseModel):
-    requirement: Requirement
+    requirement: RequirementDraft
     next_question: Question | None
     progress: Progress
     done: bool

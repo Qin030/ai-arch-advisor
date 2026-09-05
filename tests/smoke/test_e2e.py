@@ -8,7 +8,7 @@ walk through x-ask-order; by D6 it walks the real flow:
 utterance -> questions -> requirement -> retrieval -> refusal -> three documents.
 """
 
-from app.core.fixtures import ASK_ORDER
+from app.core.question_tree import ASK_ORDER
 
 
 def test_health(client):
