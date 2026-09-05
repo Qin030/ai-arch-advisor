@@ -42,7 +42,7 @@
 | 改了規則層 | Claude Code | 呼叫 `refusal-auditor` |
 | UI 要做/要修 | M2 的 Codex | 直接說，Codex 讀 `AGENTS.md` 的 UI 要求 |
 | 追問文案讀起來很怪 | Gemini Gem 2 | 貼追問句與提問理由 |
-| 企畫書某段要改 | **M1 人工** | agent 不碰 `docs/proposal/` |
+| 企畫書某段要改 | Claude Code | 直接說要改哪一段。**定位語的改動要 M1 本人確認過才能合併**（見 `docs/PLAN.md`〈企畫書歸屬〉） |
 | 企畫書要稽核 | Gemini Gem 3（M2 操作） | 貼企畫書段落 ＋ 實作現況 |
 | 今天要收工了 | Claude Code | `/eod` |
 

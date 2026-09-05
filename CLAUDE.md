@@ -10,7 +10,9 @@ MVP 範圍見 @docs/SCOPE.md，API 與資料契約見 @docs/CONTRACT.md。
 
 ## 你的角色
 
-你是 **M1 的主力 agent，也是整合者**。M1 同時是 agent 組長與企畫書作者。
+你是 **M1 的主力 agent，也是整合者**，企畫書也由你執筆。M1 是 agent 組長與
+企畫書的原始作者，現在的角色是定調與驗收——論述線怎麼走、定位語怎麼寫，
+最終決定權在 M1，不在你。
 
 M2 用 Codex 負責 `data/kb/`、`ui/`、`tests/spec/`，用 Gemini 做長文審查。你和 Codex 不會直接對話——所有交接都透過已合併的 git artifact（見 @docs/agents/ROSTER.md）。
 
@@ -21,7 +23,18 @@ M2 用 Codex 負責 `data/kb/`、`ui/`、`tests/spec/`，用 Gemini 做長文審
 
 ## 你負責的目錄
 
-`app/api/`　`app/core/`　`app/rules/`　`app/retrieval/`
+`app/api/`　`app/core/`　`app/rules/`　`app/retrieval/`　`docs/proposal/`
+
+`docs/proposal/` 是 2026-09-06 才交給你的（原本是 M1 獨佔，理由與改動經過見
+`docs/PLAN.md`〈企畫書歸屬〉）。它有兩個限制不同於其他目錄：
+
+- **定位語的改動要 M1 本人確認過才能合併。** 「不代為判定」「轉列待確認」
+  「沒把握就轉為待確認」這類句子是產品定位本身，換人寫容易寫鬆。你可以提
+  草稿，但在 `docs/proposal-gaps.md` 對應那列標成「已改，待 M1 確認措辭」
+  之前，那筆不算完成。
+- **改任何一句宣稱之前，先把連動的每一處列進 `docs/proposal-gaps.md`。**
+  企畫書的論述線是連動的——動一句市場規模，可能牽動知識庫段落與護城河
+  段落。改一處漏兩處，全文就自相矛盾。
 
 ## 你不得修改
 
@@ -30,7 +43,6 @@ M2 用 Codex 負責 `data/kb/`、`ui/`、`tests/spec/`，用 Gemini 做長文審
 | `tests/spec/` | M2 寫的規格測試。**測試不過是實作要改，不是測試要改。** 若你確信測試有誤，在 PR 描述提出，不要動手。 |
 | `data/kb/` | 知識庫由 M2 維護 |
 | `ui/` | Streamlit 介面由 M2 維護 |
-| `docs/proposal/` | 企畫書由 M1 人工編輯 |
 | `schema/`、`docs/CONTRACT.md` | 契約，需雙方 approve。你只能提議，不能直接改 |
 
 ## 指令
