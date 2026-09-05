@@ -6,6 +6,19 @@ M2 的企畫書稽核就是審這一份——每一筆新增的宣稱，都要�
 ## [未發布]
 
 ### D2
+
+- 企畫書執筆權移交（2026-09-06，**需 M2 approve**）：`docs/proposal/` 從「M1
+  獨佔、agent 不碰」改為由 Claude Code 執筆，M1 保留口徑與定位語的決定權。
+  改動原因是 `docs/PLAN.md`〈企畫書歸屬〉的〈代價〉那段本來就承認的問題——
+  M1 同時扛組長＋主力開發＋文件作者，4 小時/日不夠。原本列的三個「由 M1
+  執筆」的理由，只有第三個（交給別人寫再由 M1 改等於做兩次）真的翻掉，
+  另外兩個改寫成執筆的限制：論述線連動 → 改任何一句宣稱前先把連動處列進
+  `docs/proposal-gaps.md`；定位語刻意 → **定位語的改動要 M1 本人確認過才能
+  合併，這是唯一保留的人工關卡**。同步四處：`CLAUDE.md`〈你的角色〉與
+  〈你負責的目錄〉／〈你不得修改〉、`docs/PLAN.md` 的分工表與〈企畫書歸屬〉
+  ／目錄歸屬表／〈企畫書的版本控管〉、`docs/agents/ROSTER.md`〈該叫誰〉。
+  `.github/CODEOWNERS` 的 `/docs/proposal/ @Qin030` **不變**——owner 仍是 M1，
+  且依鐵律 1 作者不能核准自己的 PR，企畫書 PR 仍須 M2 approve
 - `docs/CONTRACT.md` 契約澄清（**待 M2 複審**）：`Question.field` 與 `/turn` 的
   `field` 帶的是 `x-ask-order` 的欄位群名稱（如 `lighting`），不是葉欄位
   （如 `lighting.color_temp`）；一次可回答該群底下的多個欄位，`value` 對應
