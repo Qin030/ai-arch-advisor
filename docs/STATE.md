@@ -11,8 +11,9 @@
 - 規格與測試的涵蓋率沒有機器檢查 → D8 題組驗證時人工對照一次
 - STATE.md 靠人工更新，D1 已證實會落後（M2 8/29 交出審查、M1 停滯 4 天無人察覺）→ 每天開工先跑 /start
 - PR 400 行上限、agent 檔案重疊偵測 → 刻意不做機器檢查，留給人判斷
-- Smart.scenes 與 Lighting.color_temp 目前靠 Pydantic 必填擋（422），
-  但契約規定資料不足是 200 拒答。與 issue #1 第 7 項的 region 同類問題
-  → D5 實作規則層時一併改為選填 + rules 層拒答
+- Smart.scenes 與 Lighting.color_temp 在 models.py 是必填，但契約規定資料不足是
+  200 拒答。與 issue #1 第 7 項的 region 同類問題。D3 起伺服器要累積部分答案，
+  只填一半的群組組不出 Requirement → D5 實作規則層時一併改為選填 + rules 層拒答。
+  「哪些 schema 條款該擋在 /turn」的討論見 issue #22
 - config.py 的 region_allowlist 已定義但無人讀取
   → D5 規則層必須從這裡讀，不要另寫一份白名單
