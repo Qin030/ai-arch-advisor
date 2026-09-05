@@ -6,6 +6,14 @@ M2 的企畫書稽核就是審這一份——每一筆新增的宣稱，都要�
 ## [未發布]
 
 ### D2
+- `docs/CONTRACT.md` 契約澄清（**待 M2 複審**）：`Question.field` 與 `/turn` 的
+  `field` 帶的是 `x-ask-order` 的欄位群名稱（如 `lighting`），不是葉欄位
+  （如 `lighting.color_temp`）；一次可回答該群底下的多個欄位，`value` 對應
+  改成物件。原範例用葉欄位示範請求形狀，但 `docs/SCOPE.md`〈做（十項）〉
+  #2 明訂「勾選式追問 5–7 題」，六組展開成葉欄位遠超過 7 題，只有「一題
+  等於一組」的讀法對得上——寫 D3 規格（`docs/specs/translation-tree.md`，
+  issue #11）時發現這個落差，隨附修正 `Question` 與 `/turn` 的範例。不涉及
+  `schema/requirement.schema.json`（該檔未定義 Turn 請求／回應信封的形狀）
 - UI 三畫面骨架進 main（PR #16，M2 的 Codex 產出）：智慧追問、多方案比較、
   需求摘要與來源，全部透過 `ui/client.py` 這唯一的 API 邊界呼叫三個
   endpoint。審查時本機把這支分支與假資料 endpoint 合併實跑，抓到一個會擋住
