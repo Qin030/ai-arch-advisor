@@ -17,6 +17,7 @@ from app.core.models import (
     PlanOption,
     Progress,
     Question,
+    QuestionOption,
     Refusal,
     Requirement,
     ScanResult,
@@ -33,14 +34,87 @@ ASK_ORDER: list[str] = _schema["x-ask-order"]
 # field = the group key, not a leaf like "site.zoning": one x-question in the
 # schema covers a whole group's fields at once, so the group is the real unit
 # of a "turn" at this fixture stage.
-_QUESTIONS = {
-    group: Question(
+#
+# A group's Question carries exactly one options/multi pair, describing that
+# group's "primary" enum field; every other leaf field is rendered by the UI
+# from the group name alone. Mapping: docs/CONTRACT.md's Question section and
+# docs/specs/translation-tree.md 三. site has no enum field at all.
+_PRIMARY_FIELD: dict[str, str | None] = {
+    "site": None,
+    "household": "routines",
+    "budget": "includes",
+    "lighting": "color_temp",
+    "circulation": "priorities",
+    "smart": "scenes",
+}
+
+# Option labels, from docs/specs/translation-tree.md 三 — lighting from
+# docs/CONTRACT.md's Question example, which spells the colour temperatures out.
+# Only labels live here; the values come from the schema's enum below, so the
+# two cannot drift apart silently. A value with no label raises at import time
+# rather than shipping a blank radio button.
+_OPTION_LABELS: dict[str, dict[str, str]] = {
+    "household": {
+        "remote_work": "常在家工作",
+        "cooking_often": "常下廚",
+        "entertaining": "常招待訪客",
+        "pets": "有寵物",
+    },
+    "budget": {
+        "land": "土地",
+        "structure": "營造費",
+        "interior": "室內裝修",
+        "landscape": "景觀外構",
+    },
+    "lighting": {
+        "warm": "暖黃（2700–3000K）",
+        "neutral": "中性白（3500–4000K）",
+        "cool": "冷白（5000K 以上）",
+    },
+    "circulation": {
+        "short_path": "動線短",
+        "storage": "收納充足",
+        "automation": "自動化控制",
+        "accessibility": "無障礙",
+    },
+    "smart": {
+        "arrive_home": "回家",
+        "leave_home": "離家",
+        "sleep": "睡眠",
+        "security": "安全監控",
+        "lighting": "智慧照明",
+    },
+}
+
+
+def _build_options(group: str) -> tuple[list[QuestionOption], bool]:
+    """Options and the multi flag for one group's primary field.
+
+    Values from the schema's enum, labels from _OPTION_LABELS. An enum gaining a
+    value without a label is a KeyError here, at import, not a silent blank.
+    """
+    field = _PRIMARY_FIELD[group]
+    if field is None:
+        return [], False
+    leaf = _schema["properties"][group]["properties"][field]
+    multi = leaf["type"] == "array"
+    values = leaf["items"]["enum"] if multi else leaf["enum"]
+    labels = _OPTION_LABELS[group]
+    return [QuestionOption(value=value, label=labels[value]) for value in values], multi
+
+
+def _question(group: str) -> Question:
+    options, multi = _build_options(group)
+    return Question(
         field=group,
         text=_schema["properties"][group]["x-question"],
         reason=_schema["properties"][group]["x-question-reason"],
+        options=options,
+        multi=multi,
     )
-    for group in ASK_ORDER
-}
+
+
+_QUESTIONS = {group: _question(group) for group in ASK_ORDER}
 
 _TURN_REQUIREMENT = Requirement.model_validate(
     json.loads((ROOT / "schema" / "examples" / "complete.json").read_text("utf-8"))

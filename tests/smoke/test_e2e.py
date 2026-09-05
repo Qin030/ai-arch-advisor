@@ -25,16 +25,31 @@ def test_turn_unknown_session_is_404_not_500(client):
     assert r.status_code == 404
 
 
-def test_turn_rejects_leaf_style_value(client):
+def test_turn_rejects_leaf_style_value_with_400_and_no_progress(client):
     # docs/CONTRACT.md's Question/turn are group-level: `value` is an object
     # bundling that group's leaf fields, not a bare scalar. A leaf-style
     # request (the shape the old contract example used) must not validate.
+    #
+    # 400, not FastAPI's default 422: docs/CONTRACT.md 〈錯誤〉 gives exactly one
+    # code for a request that does not match the schema.
     start = client.post("/session/start", json={"utterance": "test"})
     session_id = start.json()["session_id"]
-    r = client.post(
+    rejected = client.post(
         "/turn", json={"session_id": session_id, "field": "lighting", "value": "warm"}
     )
-    assert r.status_code == 422
+    assert rejected.status_code == 400
+
+    # And it must not have consumed a group. docs/specs/translation-tree.md 二
+    # step 3: a type error is not a "processed" turn — the client resends the
+    # same group, it does not lose one. Asserted through observable state,
+    # since D2 has no endpoint that reports progress on its own.
+    accepted = client.post(
+        "/turn",
+        json={"session_id": session_id, "field": ASK_ORDER[0], "value": {"answer": "x"}},
+    )
+    assert accepted.status_code == 200
+    assert accepted.json()["progress"] == {"answered": 1, "total": len(ASK_ORDER)}
+    assert accepted.json()["next_question"]["field"] == ASK_ORDER[1]
 
 
 def test_fixture_flow_walks_ask_order_to_summary(client):
