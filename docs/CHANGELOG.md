@@ -5,6 +5,24 @@ M2 的企畫書稽核就是審這一份——每一筆新增的宣稱，都要�
 
 ## [未發布]
 
+### D2
+- UI 三畫面骨架進 main（PR #16，M2 的 Codex 產出）：智慧追問、多方案比較、
+  需求摘要與來源，全部透過 `ui/client.py` 這唯一的 API 邊界呼叫三個
+  endpoint。審查時本機把這支分支與假資料 endpoint 合併實跑，抓到一個會擋住
+  整個追問流程的問題——送出答案時沒有把值包成契約要求的群組物件，六組全部
+  會回 422；M2 補上 `PRIMARY_FIELDS` 對照與 `answer_payload()` 後複測通過
+- `docs/STATE.md` 定位修正進 main（PR #10）：這份檔案每次更新都要走保護分支
+  的 PR，等合併時裡面寫的 PR／issue 狀態早就過時（該 PR 自己就是例子）。改成
+  只留機器查不到的東西（日期／階段、契約狀態、已知未補），PR、issue、CI 的
+  即時狀況一律由 `/start` 查 GitHub。`/start` 同時新增「開超過 24 小時仍未
+  取得核准的 PR」偵測，作為 D1 那次 PR #3 卡四天沒人發現的對策；`CLAUDE.md`
+  與 `AGENTS.md` 裡同一個概念的舊描述一併同步，避免只改一處造成漂移
+- `.claude/commands/start.md` 的逾時偵測條件修正（PR #10 內）：原本查
+  `reviewDecision` 是否為 `null`／`PENDING`，但 GitHub 沒有 `PENDING` 這個
+  值，且本 repo 開了「Required approvals: 1」，未核准的 PR 平常就是
+  `REVIEW_REQUIRED`——舊條件對當時開著的五個 PR 一個都抓不到。改為檢查
+  `null` 或 `REVIEW_REQUIRED`
+
 ### D1
 - 契約草擬（**尚未凍結**）：`schema/requirement.schema.json` 與 `docs/CONTRACT.md` 由 M1 草擬，等待 M2 依企畫書附錄獨立審核後才 approve；見 `docs/CONTRACT.md` 開頭的待確認項目
 - agent 設定就緒：CLAUDE.md、AGENTS.md、兩份巢狀記憶檔、五個指令、兩個 subagent
