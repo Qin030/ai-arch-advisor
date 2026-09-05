@@ -20,7 +20,20 @@
 1. **拒答是回傳值，不是錯誤。** 資料不足時 HTTP 仍回 200，`refusals` 陣列有內容，其餘欄位照常產出。企畫書明講「其餘內容照常產出」——不要用 4xx 表達拒答。
 2. **追問決策樹由 schema 驅動。** `x-priority`、`x-question`、`x-question-reason` 都在 schema 裡，`question_tree.py` 讀它，不要在 Python 裡重複維護一份追問句。
 3. **狀態存在 server。** UI 只持有 `session_id`，不自己累積需求物件。避免兩邊對「目前收斂到哪」有不同認知。
-4. **值域限制不等於拒答。** 只有「使用者填了什麼」該用 schema 的 `type`／`required` 驗證失敗（400）；「填的東西合法但系統判斷不了」一律是拒答（200）。`region` 因此不用 `enum` 限制，見下方〈已知的欄位設計取捨〉。
+4. **值域限制不等於拒答。** 只有「使用者填了什麼」該用 schema 的 `type` 驗證失敗（400）；「填的東西合法但系統判斷不了」一律是拒答（200）。`region` 因此不用 `enum` 限制，見下方〈已知的欄位設計取捨〉。
+
+   **`required`／`minLength`／`minItems`／`anyOf` 這類完整性條款，不在 `/turn` 擋欄位群的
+   內容。** 答案型別正確但空白或不完整，仍算「處理過」並照常前進（見〈`POST /turn`〉與
+   `docs/specs/translation-tree.md`〈二〉流程第 3 步）；缺漏由 D5 的結束前掃描在 `/summary`
+   的 `scan.missing` 與 `confirmations` 揭露。
+
+   理由：`skip: true` 本來就合法，而且產生的狀態與空白答案完全相同。在 `/turn` 擋
+   `required` 等於把缺漏擋在第一關，D5 的掃描就沒有東西可掃——`app/rules/CLAUDE.md` 的
+   六個必測拒答情境裡，情境 1、2、5、6 全部靠「必填欄位沒填」觸發，擋在 `/turn` 就等於
+   讓它們永遠不會發生。
+
+   這一條講的是**欄位群的內容**。請求信封本身缺欄位（例如沒有 `session_id`）仍然是格式
+   錯誤，照〈錯誤〉表回 400。
 
 ---
 

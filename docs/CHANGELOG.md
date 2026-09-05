@@ -6,6 +6,18 @@ M2 的企畫書稽核就是審這一份——每一筆新增的宣稱，都要�
 ## [未發布]
 
 ### D2
+
+- **契約修改（依〈改契約的程序〉，需雙方 approve）：**〈設計前提〉4 原本寫「只有『使用者
+  填了什麼』該用 schema 的 `type`／`required` 驗證失敗（400）」，與同一份文件〈`POST /turn`〉
+  的「型別正確、但內容空白或不完整 → 回 200，視為已處理，正常前進」以及
+  `docs/specs/translation-tree.md`〈二〉流程第 3 步互相矛盾。改為只有 `type` 回 400；
+  `required`／`minLength`／`minItems`／`anyOf` 是完整性條款，不在 `/turn` 擋欄位群的內容，
+  缺漏留給 D5 的結束前掃描。理由：`skip: true` 本來就合法且產生同樣的狀態，在 `/turn` 擋
+  `required` 會讓 D5 的掃描沒有東西可掃——六個必測拒答情境裡有四個（1、2、5、6）靠「必填
+  欄位沒填」觸發，擋在第一關等於讓它們永遠不會發生。另補一句釐清這條講的是欄位群的內容，
+  請求信封本身缺欄位（例如沒有 `session_id`）仍是 400。不涉及
+  `schema/requirement.schema.json`（該檔未定義 `/turn` 的 HTTP 行為）。出自 issue #22，
+  M2 在 #20 的規格測試押的就是這個讀法，#28 的實作也照此
 - `docs/CONTRACT.md` 契約澄清（**待 M2 複審**）：`Question.field` 與 `/turn` 的
   `field` 帶的是 `x-ask-order` 的欄位群名稱（如 `lighting`），不是葉欄位
   （如 `lighting.color_temp`）；一次可回答該群底下的多個欄位，`value` 對應
