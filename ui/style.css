@@ -1,0 +1,19 @@
+:root {
+  --ink: #17322d;
+  --muted: #60716c;
+  --paper: #f7f4ec;
+  --sage: #55786f;
+  --line: #d9ded8;
+}
+
+[data-testid="stAppViewContainer"] { background: var(--paper); }
+[data-testid="stSidebar"] { background: #e9eee9; border-right: 1px solid var(--line); }
+h1, h2, h3 { color: var(--ink); letter-spacing: .01em; }
+p, label, [data-testid="stCaptionContainer"] { color: var(--muted); }
+.stButton > button { border-radius: 4px; border-color: var(--sage); }
+.stButton > button[kind="primary"] { background: var(--ink); }
+[data-testid="stMetric"] { background: #fff; border: 1px solid var(--line); padding: 1rem; }
+[data-testid="stExpander"] { background: #fff; border-color: var(--line); }
+.advisor-kicker { color: var(--sage); font-size: .76rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.advisor-rule { width: 3rem; height: 3px; background: #bd765d; margin: .75rem 0 1.5rem; }
+.question-reason { border-left: 3px solid #bd765d; padding: .45rem .9rem; color: var(--muted); }
