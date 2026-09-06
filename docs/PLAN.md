@@ -253,6 +253,10 @@ M2 在 D10 就是拿這張表逐列驗收。**這張表由 M1 產、M2 簽收**�
 | └ Claude Code | 實作 `translator.py`（語彙→面向）＋ `question_tree.py`（追問優先序、級距收斂） | PR `feat/translation-tree` |
 
 **注意順序：** M2 的測試 PR 必須**先**合併，M1 才開始實作。
+本次 D3 issue #19 可在治理變更合併、兩位成員確認鎖版交接清單後，改依
+`docs/agents/ROSTER.md`〈D3 鎖版測試交接〉執行；其餘功能維持原順序。
+此例外容許測試延後進 main，不容許測試被改弱或略過 CI；在原測試進 main
+且實際整合版本的 required CI 全綠前，不得宣稱 D3 驗收完成。
 
 ---
 

@@ -6,6 +6,12 @@ M2 的企畫書稽核就是審這一份——每一筆新增的宣稱，都要�
 ## [未發布]
 
 ### D2
+
+- D3 測試交接程序（issue #19，2026-09-07）：僅在治理 PR 合併及兩人確認
+  完整測試 SHA、獨立審查紀錄與交接清單後，允許以鎖版測試開始實作與審查。
+  同步 RULES／AGENTS、PLAN、ROSTER 與 CLAUDE；測試作者讀實作後不得再改
+  該功能測試。保留全部斷言、required CI、PR 400 行及人類合併要求；接線後
+  立即納入原測試，實際 main 通過 CI 才算 D3 驗收。提案與未完成清單不視為生效。
 - `docs/CONTRACT.md` 契約澄清（**待 M2 複審**）：`Question.field` 與 `/turn` 的
   `field` 帶的是 `x-ask-order` 的欄位群名稱（如 `lighting`），不是葉欄位
   （如 `lighting.color_temp`）；一次可回答該群底下的多個欄位，`value` 對應
