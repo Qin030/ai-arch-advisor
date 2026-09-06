@@ -19,7 +19,7 @@ from app.core.models import (
     Question,
     QuestionOption,
     Refusal,
-    Requirement,
+    RequirementDraft,
     ScanResult,
     StartResponse,
     SummaryResponse,
@@ -117,7 +117,12 @@ def _question(group: str) -> Question:
 
 _QUESTIONS = {group: _question(group) for group in ASK_ORDER}
 
-_TURN_REQUIREMENT = Requirement.model_validate(
+# RequirementDraft, not Requirement: from D3 the response envelope carries the
+# requirement as it accumulates, which is not the same type as a finished one.
+# See the class docstring in app/core/models.py. The fixture happens to be
+# complete, so nothing is lost here — the envelope simply matches what /turn
+# will hold once the real tree is wired in.
+_TURN_REQUIREMENT = RequirementDraft.model_validate(
     json.loads((ROOT / "schema" / "examples" / "complete.json").read_text("utf-8"))
 )
 
@@ -131,7 +136,7 @@ def start_session(utterance: str) -> StartResponse:
     _sessions[session_id] = 1
     return StartResponse(
         session_id=session_id,
-        requirement=Requirement(session_id=session_id, region="tainan"),
+        requirement=RequirementDraft(session_id=session_id, region="tainan"),
         # Real vocabulary detection as of D3. These are shown back to the user
         # so they can confirm what was understood; they never change what gets
         # asked — docs/specs/translation-tree.md 一 is explicit that all six
