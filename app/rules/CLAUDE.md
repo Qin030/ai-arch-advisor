@@ -26,13 +26,15 @@
 | # | 觸發條件 | 應拒答的內容 | 確認對象 |
 |---|---|---|---|
 | 1 | 無地號或使用分區 | 建蔽率、容積率、退縮規定 | 建築師 |
-| 2 | 無家庭成員資料 | 空間配置建議 | — |
+| 2 | 無家庭成員資料 | 空間配置建議 | 建築師 |
 | 3 | 地區非臺南（未收錄） | 一切法規判定 | 建築師 |
-| 4 | 成本資料版本過期 | 不直接引用，須附過期警示 | — |
-
-情境 4 不由 `schema/requirement.schema.json` 的 `x-refusal` 承載——過期是知識庫切片的屬性，不是使用者輸入的欄位，request schema 沒有對應欄位可填。判斷邏輯：檢索回來的切片比對 `KB_STALE_DAYS`（見 `app/core/config.py`），超過門檻在對應 `Citation.stale`（見 `app/core/models.py`）標記為 `true` 並附過期警示，不是拋出拒答的四欄位。其餘五個情境（1、2、3、5、6）才是 schema 的 `x-refusal` 承載的。
+| 4 | 成本資料版本過期 | 不直接引用，須附過期警示 | 不適用，見下 |
 | 5 | `smart.scenes` 未填 | 弱電、網路孔位、設備電源描述 | 中華電信 |
 | 6 | `lighting.color_temp` 未填 | 色溫描述 | 室內設計師 |
+
+**情境 2 的確認對象以 `schema/requirement.schema.json` 的 `household.x-refusal.confirm_with` 為準（建築師）。** 這一格原本是「—」，但上方硬性要求 2 明訂四個欄位缺一不可——`confirm_with` 空著會產出一列殘缺的待確認事項，使用者拿到清單卻不知道該找誰。schema 是凍結的契約，這張表是說明文件，不一致時以 schema 為準。
+
+**情境 4 不是四欄位拒答，所以沒有確認對象。** 它不由 `x-refusal` 承載——過期是知識庫切片的屬性，不是使用者輸入的欄位，request schema 沒有對應欄位可填。判斷邏輯：檢索回來的切片比對 `KB_STALE_DAYS`（見 `app/core/config.py`），超過門檻在對應 `Citation.stale`（見 `app/core/models.py`）標記為 `true` 並附過期警示，不是拋出拒答的四欄位。其餘五個情境（1、2、3、5、6）才是 schema 的 `x-refusal` 承載的。
 
 這六條對應 `tests/spec/test_refusal.py`。**那是 M2 的檔案。** 若你認為某條規則需要調整，在 PR 描述裡提出，不要自己改測試。
 
