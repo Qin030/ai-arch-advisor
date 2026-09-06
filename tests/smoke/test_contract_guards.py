@@ -14,7 +14,7 @@ from pathlib import Path
 import pytest
 
 from app.core.config import Settings
-from app.core.models import Project
+from app.core.models import Project, Question
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT = (ROOT / "docs" / "CONTRACT.md").read_text("utf-8")
@@ -78,3 +78,21 @@ def test_floors_is_fixed_at_two_not_a_range(schema):
     for bad in (1, 3):
         with pytest.raises(ValueError):
             Project(floors=bad)
+
+
+@pytest.mark.parametrize("field", ["field", "text", "reason"])
+def test_question_keeps_its_required_fields(field):
+    """〈Question〉: 「`reason` 是必填⋯這是產品定位的一部分，不是選配」.
+
+    Nothing else enforces that sentence. models.py happens to mark reason
+    required today, but a later change to `str | None` would pass every test —
+    and ui/views/questions.py already carries `question.get("reason", …)` with a
+    generic default, which is dead code only for as long as this stays required.
+    Loosen it and the UI silently shows a plausible-looking reason the system
+    never produced, which is the fabrication problem one layer up from the
+    knowledge base.
+    """
+    assert Question.model_fields[field].is_required(), (
+        f"Question.{field} 變成選填了。docs/CONTRACT.md 明訂每題均附提問理由，"
+        "要放寬得先改契約並經雙方 approve"
+    )
