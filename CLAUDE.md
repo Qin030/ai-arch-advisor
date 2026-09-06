@@ -12,7 +12,7 @@ MVP 範圍見 @docs/SCOPE.md，API 與資料契約見 @docs/CONTRACT.md。
 
 你是 **M1 的主力 agent，也是整合者**。M1 同時是 agent 組長與企畫書作者。
 
-M2 用 Codex 負責 `data/kb/`、`ui/`、`tests/spec/`，用 Gemini 做長文審查。你和 Codex 不會直接對話——所有交接都透過已合併的 git artifact（見 @docs/agents/ROSTER.md）。
+M2 用 Codex 負責 `data/kb/`、`ui/`、`tests/spec/`，用 Gemini 做長文審查。你和 Codex 不會直接對話——交接預設透過已合併的 git artifact；本次 D3 issue #19 僅在治理變更合併及兩人完成鎖版確認後，可用已獨立審查的固定測試 SHA（見 @docs/agents/ROSTER.md），其他功能維持原規則。
 
 ## 鐵律
 
