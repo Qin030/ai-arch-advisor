@@ -61,8 +61,11 @@ def check_slice(path: Path) -> list[str]:
     if "id" in data and path.stem != str(data["id"]):
         errors.append(f"檔名 {path.stem} 與 id {data['id']} 不一致")
 
-    if data.get("type") not in TYPES:
-        errors.append(f"type 必須是 {TYPES}，得到 {data.get('type')}")
+    slice_type = data.get("type")
+    if not isinstance(slice_type, str):
+        errors.append(f"type 必須是字串，得到 {type(slice_type).__name__}: {slice_type!r}")
+    elif slice_type not in TYPES:
+        errors.append(f"type 必須是 {sorted(TYPES)}，得到 {slice_type!r}")
 
     if data.get("type") and path.parent.name != data.get("type"):
         errors.append(f"檔案放在 {path.parent.name}/ 但 type 是 {data.get('type')}")
@@ -85,8 +88,11 @@ def check_slice(path: Path) -> list[str]:
         elif ct not in CONTENT_TYPES:
             errors.append(f"content_type 必須是 {sorted(CONTENT_TYPES)} 其中之一，得到 {ct!r}")
 
-    if data.get("region") not in REGIONS:
-        errors.append(f"region 必須在白名單 {REGIONS} 內，得到 {data.get('region')}")
+    region = data.get("region")
+    if not isinstance(region, str):
+        errors.append(f"region 必須是字串，得到 {type(region).__name__}: {region!r}")
+    elif region not in REGIONS:
+        errors.append(f"region 必須在白名單 {sorted(REGIONS)} 內，得到 {region!r}")
 
     vd = data.get("version_date")
     if vd is not None:
@@ -125,8 +131,9 @@ def main() -> int:
         if sid in seen_ids:
             errors.append(f"id 重複: {sid}")
         seen_ids.add(sid)
-        if data.get("type") in counts:
-            counts[data["type"]] += 1
+        slice_type = data.get("type")
+        if isinstance(slice_type, str) and slice_type in counts:
+            counts[slice_type] += 1
 
         if errors:
             failed += 1
