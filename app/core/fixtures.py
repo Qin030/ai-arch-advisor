@@ -25,6 +25,7 @@ from app.core.models import (
     SummaryResponse,
     TurnResponse,
 )
+from app.core.translator import detect_aspects
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -131,7 +132,11 @@ def start_session(utterance: str) -> StartResponse:
     return StartResponse(
         session_id=session_id,
         requirement=Requirement(session_id=session_id, region="tainan"),
-        detected_aspects=["lighting", "circulation", "climate"],
+        # Real vocabulary detection as of D3. These are shown back to the user
+        # so they can confirm what was understood; they never change what gets
+        # asked — docs/specs/translation-tree.md 一 is explicit that all six
+        # groups are asked either way.
+        detected_aspects=detect_aspects(utterance),
         next_question=_QUESTIONS[ASK_ORDER[0]],
         progress=Progress(answered=0, total=len(ASK_ORDER)),
     )
