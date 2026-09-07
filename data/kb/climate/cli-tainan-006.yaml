@@ -1,0 +1,39 @@
+id: cli-tainan-006
+type: climate
+title: "中央氣象署氣候觀測_逐月_多要素氣象資料 臺南站 2026-08 降雨日數及門檻"
+source_org: 中央氣象署
+source_url: https://opendata.cwa.gov.tw/dataset/all/C-B0026-001
+version_date: "2026-09-06"
+region: tainan
+license: "政府資料開放授權條款 (Open Government Data License)；氣象資料開放平臺使用規範：https://opendata.cwa.gov.tw/about/rules"
+content: |
+  {
+    "tagName": "Precipitation",
+    "description": "降水量",
+    "units": "mm",
+    "statisticalMethods": {
+      "statisticalMethod": [
+        {
+          "methodTagName": "GE01Days",
+          "description": "降雨日數, 降雨量\u0026gt;=0.1mm日數,Number of Days with Precipitation \u0026gt;=0.1mm"
+        }
+      ]
+    }
+  }
+
+  {
+    "station": {
+      "StationID": "467410",
+      "StationName": "臺南",
+      "StationNameEN": "Tainan",
+      "StationAttribute": "署屬有人氣象站"
+    },
+    "stationObsStatistics": {
+      "YearMonth": "2026-08",
+      "Precipitation": {
+        "monthly": {
+          "GE01Days": "21"
+        }
+      }
+    }
+  }
