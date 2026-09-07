@@ -1,0 +1,39 @@
+id: cli-tainan-004
+type: climate
+title: "中央氣象署氣候觀測_逐月_多要素氣象資料 臺南站 2026-08 平均相對濕度"
+source_org: 中央氣象署
+source_url: https://opendata.cwa.gov.tw/dataset/all/C-B0026-001
+version_date: "2026-09-06"
+region: tainan
+license: "政府資料開放授權條款 (Open Government Data License)；氣象資料開放平臺使用規範：https://opendata.cwa.gov.tw/about/rules"
+content: |
+  {
+    "tagName": "RelativeHumidity",
+    "description": "相對溼度",
+    "units": "%",
+    "statisticalMethods": {
+      "statisticalMethod": [
+        {
+          "methodTagName": "Mean",
+          "description": "平均相對濕度"
+        }
+      ]
+    }
+  }
+
+  {
+    "station": {
+      "StationID": "467410",
+      "StationName": "臺南",
+      "StationNameEN": "Tainan",
+      "StationAttribute": "署屬有人氣象站"
+    },
+    "stationObsStatistics": {
+      "YearMonth": "2026-08",
+      "RelativeHumidity": {
+        "monthly": {
+          "Mean": "84"
+        }
+      }
+    }
+  }

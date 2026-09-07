@@ -1,0 +1,44 @@
+id: cli-tainan-003
+type: climate
+title: "中央氣象署氣候觀測_逐月_多要素氣象資料 臺南站 2026-08 最低溫度與發生日期"
+source_org: 中央氣象署
+source_url: https://opendata.cwa.gov.tw/dataset/all/C-B0026-001
+version_date: "2026-09-06"
+region: tainan
+license: "政府資料開放授權條款 (Open Government Data License)；氣象資料開放平臺使用規範：https://opendata.cwa.gov.tw/about/rules"
+content: |
+  {
+    "tagName": "AirTemperature",
+    "description": "溫度",
+    "units": "˚C",
+    "statisticalMethods": {
+      "statisticalMethod": [
+        {
+          "methodTagName": "Minimum",
+          "description": "最低溫度"
+        },
+        {
+          "methodTagName": "MinimumDate",
+          "description": "最低溫度發生日期"
+        }
+      ]
+    }
+  }
+
+  {
+    "station": {
+      "StationID": "467410",
+      "StationName": "臺南",
+      "StationNameEN": "Tainan",
+      "StationAttribute": "署屬有人氣象站"
+    },
+    "stationObsStatistics": {
+      "YearMonth": "2026-08",
+      "AirTemperature": {
+        "monthly": {
+          "Minimum": "24.3",
+          "MinimumDate": "2026-08-23"
+        }
+      }
+    }
+  }
